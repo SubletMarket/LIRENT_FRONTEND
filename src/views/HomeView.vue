@@ -3,6 +3,7 @@ import HomeKakaoMap from "@/components/HomeKakaoMap.vue";
 import HomeAptList from "@/components/HomeAptList.vue";
 import { homeAxios, regcodeAxios } from "@/util/http-commons";
 import { ref, onMounted } from "vue";
+import HomeBoard from "@/components/HomeBoard.vue";
 
 const regcodeHttp = regcodeAxios();
 const homeHttp = homeAxios();
@@ -127,6 +128,7 @@ function findHomeByName() {
   <!-- 중앙 content start -->
   <div>
     <div class="row" id="map-data-field">
+      <HomeBoard />
       <!-- 중앙 left content  start -->
       <HomeKakaoMap :selected-apt="apt" />
     </div>
