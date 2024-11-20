@@ -19,8 +19,8 @@ onMounted(async () => {
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
     <div class="container">
-      <RouterLink :to="{ name: 'landing' }" class="navbar-brand text-primary fw-bold"
-        >SSAFY HOME</RouterLink
+      <RouterLink :to="{ name: 'landing' }" class="navbar-brand text-primary fw-bold" style="font-family: 'Rampart One', cursive;"
+        >LIRENT</RouterLink
       >
       <button
         class="navbar-toggler"
@@ -77,4 +77,6 @@ onMounted(async () => {
   </nav>
 </template>
 
-<style scoped></style>
+<style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Rampart+One&display=swap');
+</style>

@@ -1,10 +1,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useMemberStore } from "@/stores/member";
+import axios from "axios";
 
 const router = useRouter();
-const store = useMemberStore();
 
 const loginFailMessage = ref("");
 const userId = ref("");
@@ -12,10 +11,10 @@ const password = ref("");
 const saveIdChecked = ref(false);
 
 onMounted(() => {
-  // 쿠키에서 userId 값을 가져오고 체크 상태를 설정
+  // 쿠키에서 userId 값을 가져와 체크박스 상태 설정
   const savedUserId = document.cookie.replace(
     /(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/,
-    '$1'
+    "$1"
   );
   if (savedUserId) {
     saveIdChecked.value = true;
@@ -24,21 +23,33 @@ onMounted(() => {
 });
 
 const handleLogin = async () => {
-  // 로그인 처리 로직 추가
   try {
     // 로그인 API 호출
-    store.login(userId.value, password.value);
+    const response = await axios.post("/api/member/token", {
+      email: userId.value,
+      password: password.value,
+    });
 
-    // 로그인 성공 시 홈페이지로 이동
-    router.push("/");
+    // JWT 토큰 저장
+    const accessToken = response.data.accessToken;
+    localStorage.setItem("accessToken", accessToken);
+
+    // 쿠키에 userId 저장 (선택적)
+    if (saveIdChecked.value) {
+      document.cookie = `userId=${userId.value}; path=/; max-age=604800`; // 7일 유효
+    } else {
+      document.cookie = "userId=; path=/; max-age=0"; // 쿠키 삭제
+    }
+
+    // 성공 시 홈페이지로 이동
+    router.push("/home");
   } catch (error) {
+    // 로그인 실패 메시지 표시
     loginFailMessage.value = "아이디 또는 비밀번호가 잘못되었습니다.";
   }
-
-  // TODO: 쿠키 처리 해야됨!
 };
 
-// 페이지로 보내야 할 때
+// 페이지 이동 함수
 const navigateTo = (path) => {
   router.push({ path: `/${path}` });
 };
@@ -46,7 +57,7 @@ const navigateTo = (path) => {
 
 <template>
   <div>
-    <!-- 로그인 실패 메시지 표시 -->
+    <!-- 로그인 실패 메시지 -->
     <div v-if="loginFailMessage" style="color: red">{{ loginFailMessage }}</div>
 
     <div class="container">
@@ -93,10 +104,6 @@ const navigateTo = (path) => {
         <button @click="navigateTo('resetPassword')" class="btn btn-link">
           비밀번호를 잊으셨나요? 재설정하기
         </button>
-      </div>
-
-      <div class="text-center mt-3">
-        <router-link to="/member/index">홈으로 돌아가기</router-link>
       </div>
     </div>
   </div>

@@ -58,7 +58,7 @@ function deleteQna() {
       qnaModal.hide();
       currentQna.value = {};
       loadQnaList();
-    } else if (res.status === 400) {
+    } else {
       // 실패
       window.alert("삭제에 실패했습니다.");
     }
@@ -80,11 +80,17 @@ function createQna() {
 }
 
 function updateQna() {
-  noticeHttp.put(`/${currentQna.value.id}`, currentQna.value).then((res) => {
-    if (res.status === 200) {
-      loadQnaList();
-    }
-  });
+  noticeHttp
+    .put(`/${currentQna.value.boardId}`, {
+      title: currentQna.value.title,
+      content: currentQna.value.content,
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        qnaModal.hide();
+        loadQnaList();
+      }
+    });
 }
 </script>
 
@@ -101,15 +107,15 @@ function updateQna() {
             <th>작성일</th>
           </tr>
         </thead>
-        <tbody @click="qnaModal.show()">
+        <tbody>
           <tr
             v-for="(qna, index) in list"
-            :key="qna.id"
+            :key="qna.boardId"
             @click="changeDetail(index)"
           >
-            <th>{{ qna.title }}</th>
-            <th>{{ qna.memberId }}</th>
-            <th>{{ qna.createdDate + index }}</th>
+            <td>{{ qna.title }}</td>
+            <td>{{ qna.memberId }}</td>
+            <td>{{ qna.createdDate }}</td>
           </tr>
         </tbody>
       </table>
@@ -125,7 +131,6 @@ function updateQna() {
     >
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-          <!-- modal HEADER -->
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="exampleModalLabel">질문</h1>
             <button
@@ -135,7 +140,6 @@ function updateQna() {
               aria-label="Close"
             ></button>
           </div>
-          <!--modal BODY -->
           <div class="modal-body">
             <div class="container mt-4">
               <div class="mb-3">

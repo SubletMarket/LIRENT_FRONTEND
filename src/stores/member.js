@@ -14,11 +14,11 @@ export const useMemberStore = defineStore("member", () => {
     email: "",
   });
 
-  function login(id, pw) {
+  function login(email, password) {
     memberHttp
-      .post("/login", {
-        id,
-        pw,
+      .post("/token", {
+        email,
+        password,
       })
       .then((res) => {
         getUserData();
