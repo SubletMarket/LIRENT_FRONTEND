@@ -10,9 +10,7 @@ onMounted(async () => {
   try {
     // 로그인 API 호출
     await memberStore.getUserData();
-  } catch {
-
-  }
+  } catch {}
 });
 </script>
 
@@ -45,13 +43,23 @@ onMounted(async () => {
           </li>
         </ul>
         <!-- 로그인 전 -->
-        <template v-if=!memberStore.member.id>
+        <template v-if="true">
           <ul class="navbar-nav mb-2 me-2 mb-lg-0" id="header_nav_confirm_off">
             <li class="nav-item">
-              <RouterLink :to="{ name: 'login' }" class="nav-link" aria-current="page">로그인</RouterLink>
+              <RouterLink
+                :to="{ name: 'login' }"
+                class="nav-link"
+                aria-current="page"
+                >로그인</RouterLink
+              >
             </li>
             <li class="nav-item">
-              <RouterLink :to="{ name: 'register' }" class="nav-link" aria-current="page">회원가입</RouterLink>
+              <RouterLink
+                :to="{ name: 'register' }"
+                class="nav-link"
+                aria-current="page"
+                >회원가입</RouterLink
+              >
             </li>
           </ul>
         </template>
@@ -68,7 +76,12 @@ onMounted(async () => {
               </button>
             </li>
             <li class="nav-item">
-              <RouterLink :to="{ name: 'mypage' }" class="nav-link" aria-current="page">마이페이지</RouterLink>
+              <RouterLink
+                :to="{ name: 'mypage' }"
+                class="nav-link"
+                aria-current="page"
+                >마이페이지</RouterLink
+              >
             </li>
           </ul>
         </template>

@@ -1,9 +1,6 @@
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { defineStore } from "pinia";
 import { memberAxios } from "@/util/http-commons";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
 
 export const useMemberStore = defineStore("member", () => {
   const memberHttp = memberAxios();
@@ -14,6 +11,8 @@ export const useMemberStore = defineStore("member", () => {
     email: "",
   });
 
+  const accessToken = ref();
+
   function login(email, password) {
     memberHttp
       .post("/token", {
@@ -21,44 +20,64 @@ export const useMemberStore = defineStore("member", () => {
         password,
       })
       .then((res) => {
-        getUserData();
+        accessToken.value = res.data.accessToken;
+        console.log(accessToken);
       })
       .catch((err) => {});
   }
 
-  function getUserData() {
-    memberHttp
-      .get("")
-      .then((res) => {
-        member.id = res.data.userId;
-        member.name = res.data.name;
-        member.email = res.data.email;
-      })
-      .catch((err) => {});
-  }
+  // function logout() {
+  //   memberHttp
+  //     .delete("/logout")
+  //     .then((res) => {
+  //       member.id = "";
+  //       member.name = "";
+  //       member.email = "";
+  //       alert("로그아웃되었습니다. 감사합니다.");
+  //       router.push("/");
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }
 
-  function logout() {
+  function register({
+    email,
+    password,
+    phone,
+    address,
+    nickname,
+    bcode,
+    bun,
+    ji,
+    dong,
+    ho,
+    floor,
+    area,
+    rooms,
+    bathrooms,
+  }) {
     memberHttp
-      .delete("/logout")
-      .then((res) => {
-        member.id = "";
-        member.name = "";
-        member.email = "";
-        alert("로그아웃되었습니다. 감사합니다.");
-        router.push("/");
+      .post("", {
+        email,
+        password,
+        phone,
+        address,
+        nickname,
+        bcode,
+        bun,
+        ji,
+        dong,
+        ho,
+        floor,
+        area,
+        rooms,
+        bathrooms,
       })
-      .catch((err) => {
-        console.error(err);
+      .then((res) => {
+        console.log("Register 성공함 : " + res);
+        console.log(res);
       });
-  }
-
-  function register(id, pw, name, email) {
-    memberHttp.post("", {
-      id,
-      name,
-      pw,
-      email,
-    });
   }
 
   function updateUser(pw, name, email) {
@@ -99,9 +118,7 @@ export const useMemberStore = defineStore("member", () => {
   return {
     member,
     login,
-    logout,
     register,
-    getUserData,
     updateUser,
     deleteUser,
     resetPassword,
