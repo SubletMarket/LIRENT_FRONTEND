@@ -1,16 +1,25 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import { useMemberStore } from "@/stores/member";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 
 const memberStore = useMemberStore();
 
+// 로그인 상태를 계산 속성으로 정의
+const isLoggedIn = computed(() => !!memberStore.accessToken);
+
+// 네비게이션 바 로드 시 사용자 데이터 가져오기
 onMounted(async () => {
-  // 로그인 처리 로직 추가
-  try {
-    // 로그인 API 호출
-    await memberStore.getUserData();
-  } catch {}
+  if (memberStore.accessToken) { // 토큰이 있을 때만 호출
+    try {
+      await memberStore.getUserData();
+      console.log("사용자 정보 로드 성공:", memberStore.member);
+    } catch (err) {
+      console.log("사용자 정보 로드 실패:", err);
+    }
+  } else {
+    console.log("토큰 없음: 사용자 정보 가져오기 건너뜀");
+  }
 });
 </script>
 
@@ -43,7 +52,7 @@ onMounted(async () => {
           </li>
         </ul>
         <!-- 로그인 전 -->
-        <template v-if="true">
+        <template v-if="!isLoggedIn">
           <ul class="navbar-nav mb-2 me-2 mb-lg-0" id="header_nav_confirm_off">
             <li class="nav-item">
               <RouterLink

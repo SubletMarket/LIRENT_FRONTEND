@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import axios from "axios";
+import { useMemberStore } from "@/stores/member"; // 정확한 경로로 수정
 
 const router = useRouter();
+const memberStore = useMemberStore();
 
 const loginFailMessage = ref("");
 const userId = ref("");
@@ -24,28 +25,27 @@ onMounted(() => {
 
 const handleLogin = async () => {
   try {
-    // 로그인 API 호출
-    const response = await axios.post("/api/member/token", {
-      email: userId.value,
-      password: password.value,
-    });
+    const token = await memberStore.login(userId.value, password.value);
+    console.log("서버에서 받은 토큰:", token);
 
-    // JWT 토큰 저장
-    const accessToken = response.data.accessToken;
-    localStorage.setItem("accessToken", accessToken);
-
-    // 쿠키에 userId 저장 (선택적)
-    if (saveIdChecked.value) {
-      document.cookie = `userId=${userId.value}; path=/; max-age=604800`; // 7일 유효
-    } else {
-      document.cookie = "userId=; path=/; max-age=0"; // 쿠키 삭제
+    if (!token) {
+      throw new Error("로그인 실패: 토큰이 없습니다.");
     }
 
-    // 성공 시 홈페이지로 이동
-    router.push("/home");
+    // 토큰 저장
+    localStorage.setItem("accessToken", token);
+    console.log("로그인 성공");
+
+    // 사용자 정보 가져오기
+    await memberStore.getUserData();
+    router.push("/"); // 로그인 후 홈으로 이동
   } catch (error) {
-    // 로그인 실패 메시지 표시
-    loginFailMessage.value = "아이디 또는 비밀번호가 잘못되었습니다.";
+    console.error("로그인 오류:", error);
+    if (error.response && error.response.status === 401) {
+      alert("아이디 또는 비밀번호가 잘못되었습니다.");
+    } else {
+      alert("오류가 발생했습니다. 다시 시도해주세요.");
+    }
   }
 };
 
