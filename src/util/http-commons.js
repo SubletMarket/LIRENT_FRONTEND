@@ -6,7 +6,7 @@ const {
   VITE_HOME_API_URL,
   VITE_REGCODE_API_URL,
   VITE_HOMEDEAL_API_URL,
-  VITE_SUBLEASE_API_URL
+  VITE_SUBLEASE_API_URL,
 } = import.meta.env;
 
 function createAxiosInstance(baseUrl, credentials) {
@@ -24,13 +24,12 @@ function createAxiosInstance(baseUrl, credentials) {
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`; // Authorization 헤더 추가
     }
-    console.log("Axios 요청 설정:", config);
     return config;
   });
 
   return instance;
 }
-	
+
 function subleaseAxios() {
   return createAxiosInstance(VITE_SUBLEASE_API_URL, true);
 }

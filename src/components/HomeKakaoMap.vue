@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import { subleaseAxios } from "@/util/http-commons";
 import { useMemberStore } from "@/stores/member";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 // 피니아
 const memberStore = useMemberStore();
@@ -10,6 +10,7 @@ const memberStore = useMemberStore();
 const subleaseHttp = subleaseAxios();
 // 라우트
 const route = useRoute();
+const router = useRouter();
 
 // 변수들
 const mapInstance = ref();
@@ -17,7 +18,6 @@ const mapCenter = reactive({});
 const subleases = reactive({});
 
 // 경로가 /detail/{subleasaeId} 일 경우, 해당 subleaseId값
-const subleaseId = route.params.subleaseId;
 const sublease = reactive({});
 
 onMounted(async () => {
@@ -29,12 +29,72 @@ onMounted(async () => {
   await initSubleases();
 
   // detail의 subleaseID값이 있으면 위치 가져오기
-  if (subleaseId) {
-    getSublease(subleaseId);
+  if (route.params.subleaseId) {
+    const data = await getSublease(route.params.subleaseId);
+    sublease.value = data;
+    mapCenter.value = { latitude: data.latitude, longitude: data.longitude };
+    setOverlaiesColor(route.params.subleaseId);
   } else {
     console.log("get my location");
     getCurrentCoord();
   }
+});
+
+// sublease 목록이 변하면 지도에 오버레이 업데이트
+watch(subleases, (newVal, oldVal) => {
+  console.log("DRAWING OVERLAY..");
+
+  console.log(newVal.value);
+
+  for (const sublease of newVal.value) {
+    const adjustedPrice = sublease.price / 10000;
+    const content = document.createElement("div");
+    content.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      color: black;
+      font-size: 14px;
+      font-weight: bold;
+      border: 2px solid black;
+      border-radius: 10px;
+      padding: 5px;
+      text-align: center;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);`;
+    content.className = "text-bg-light";
+    content.innerText = `${adjustedPrice}만원 / 하루`;
+    content.addEventListener("click", () =>
+      contentClicked(sublease.subleaseId)
+    );
+
+    mapInstance.value.setOverlay(
+      sublease.subleaseId,
+      {
+        latitude: sublease.latitude,
+        longitude: sublease.longitude,
+      },
+      content
+    );
+  }
+  console.log(mapInstance.value.customOverlaies);
+});
+
+// subleaseId 변화에 따른 Detail 화면 변화
+watch(
+  () => route.params.subleaseId,
+  async (newVal, oldVal) => {
+    if (newVal) {
+      const data = await getSublease(newVal);
+      sublease.value = data;
+    }
+    setOverlaiesColor(newVal);
+  }
+);
+
+// 맵 중앙 이동 Watch
+watch(mapCenter, (newVal, oldVal) => {
+  mapInstance.value.setCenter(newVal.value);
 });
 
 async function initSubleases() {
@@ -56,59 +116,28 @@ function getCurrentCoord() {
   }
 }
 
-function getSublease(id) {
-  subleaseHttp.get(`/${id}`).then(({ data }) => {
-    sublease.value = data;
-    mapCenter.value = {
-      latitude: data.latitude,
-      longitude: data.longitude,
-    };
-  });
+async function getSublease(id) {
+  const { data } = await subleaseHttp.get(`/${id}`);
+  return data;
 }
 
-// sublease 목록이 변하면 지도에 오버레이 업데이트
-watch(subleases, (newVal, oldVal) => {
-  console.log(newVal.value);
+function setOverlaiesColor(subleaseId) {
+  for (const overlayInfo of mapInstance.value.customOverlaies) {
+    const targetOverlay = overlayInfo.overlay;
+    const content = targetOverlay.getContent();
 
-  for (const sublease of newVal.value) {
-    const adjustedPrice = sublease.price / 10000;
-    const content = `
-            <div style="
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              height: 40px;
-              background-color: white;
-              color: black;
-              font-size: 14px;
-              font-weight: bold;
-              border: 2px solid black;
-              border-radius: 10px;
-              padding: 5px;
-              text-align: center;
-              box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);">
-              ${adjustedPrice}만원 / 하루
-            </div>`;
+    if (overlayInfo.subleaseId == subleaseId) {
+      content.className = "text-bg-info";
+    } else {
+      content.className = "text-bg-light";
+    }
 
-    mapInstance.value.setOverlay(
-      {
-        latitude: sublease.latitude,
-        longitude: sublease.longitude,
-      },
-      content
-    );
+    targetOverlay.setContent(content);
   }
+}
 
-  watch(mapCenter, (newVal, oldVal) => {
-    mapInstance.value.setCenter(newVal.value);
-  });
-});
-
-function setMapCenter(data) {
-  console.log("setMapCenter");
-
-  mapCenter.value.latitude = data.latitude;
-  mapCenter.value.longitude = data.longitude;
+function contentClicked(id) {
+  router.push({ name: "detail", params: { subleaseId: parseInt(id) } });
 }
 
 class KakaoMap {
@@ -146,7 +175,7 @@ class KakaoMap {
     this.map = new kakao.maps.Map(container, options);
   }
 
-  setOverlay(coords, content) {
+  setOverlay(subleaseId, coords, content) {
     console.log("KakaoMap.setOverlay executed");
     const kakaoCoords = new kakao.maps.LatLng(
       coords.latitude,
@@ -161,7 +190,7 @@ class KakaoMap {
     });
 
     newOverlay.setMap(this.map);
-    this.customOverlaies.push(newOverlay);
+    this.customOverlaies.push({ subleaseId, overlay: newOverlay });
   }
 
   deleteOverlay() {

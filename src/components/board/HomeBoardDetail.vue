@@ -12,14 +12,6 @@ const rentPeriod = reactive({
   endDate: "",
 });
 
-// 기간 유효성 유지용 Watch
-watch(
-  () => rentPeriod.startDate,
-  (newVal, oldVal) => {
-    rentPeriod.endDate = newVal;
-  }
-);
-
 // 기간 계산용 computed
 const dayDifference = computed(() => {
   const start = new Date(rentPeriod.startDate);
@@ -36,6 +28,14 @@ const periodSelected = computed(() => {
     return false;
   }
 });
+
+// 기간 유효성 유지용 Watch
+watch(
+  () => rentPeriod.startDate,
+  (newVal, oldVal) => {
+    rentPeriod.endDate = newVal;
+  }
+);
 </script>
 
 <template>

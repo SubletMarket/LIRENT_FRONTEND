@@ -17,7 +17,12 @@ const router = createRouter({
       name: "landing",
       component: HomeView,
       children: [
-        { path: "detail/:subleaseId", component: HomeBoardDetail, props: true },
+        {
+          path: "detail/:subleaseId",
+          name: "detail",
+          component: HomeBoardDetail,
+          props: true,
+        },
       ],
     },
     {
