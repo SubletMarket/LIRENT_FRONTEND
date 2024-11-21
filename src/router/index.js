@@ -15,7 +15,9 @@ const router = createRouter({
       path: "/",
       name: "landing",
       component: HomeView,
-      children: [{ path: "detail", component: HomeBoardDetail }],
+      children: [
+        { path: "detail/:subleaseId", component: HomeBoardDetail, props: true },
+      ],
     },
     {
       path: "/login",
