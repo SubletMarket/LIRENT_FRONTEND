@@ -4,7 +4,7 @@ import { computed, onMounted, reactive, watch } from "vue";
 
 const props = defineProps({
   sublease: Object,
-  subleaseId: Number,
+  subleaseId: String,
 });
 
 const rentPeriod = reactive({
