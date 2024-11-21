@@ -21,54 +21,38 @@ onMounted(async () => {
     console.log("토큰 없음: 사용자 정보 가져오기 건너뜀");
   }
 });
+const handleLogout = () => {
+  memberStore.logout(); // 상태 초기화만 수행
+  console.log("로그아웃 완료");
+};
 </script>
 
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
     <div class="container">
-      <RouterLink :to="{ name: 'landing' }" class="navbar-brand text-primary fw-bold" style="font-family: 'Rampart One', cursive;"
-        >LIRENT</RouterLink
-      >
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+      <RouterLink :to="{ name: 'landing' }" class="navbar-brand text-primary fw-bold"
+        style="font-family: 'Rampart One', cursive;">LIRENT</RouterLink>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-lg-0">
           <li class="nav-item">
-            <RouterLink
-              :to="{ name: 'qna' }"
-              class="nav-link"
-              aria-current="page"
-              >Q&A</RouterLink
-            >
+            <RouterLink :to="{ name: 'qna' }" class="nav-link" aria-current="page">게시판</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink :to="{ name: 'contract' }" class="nav-link" aria-current="page">계약서 작성</RouterLink>
           </li>
         </ul>
         <!-- 로그인 전 -->
         <template v-if="!isLoggedIn">
           <ul class="navbar-nav mb-2 me-2 mb-lg-0" id="header_nav_confirm_off">
             <li class="nav-item">
-              <RouterLink
-                :to="{ name: 'login' }"
-                class="nav-link"
-                aria-current="page"
-                >로그인</RouterLink
-              >
+              <RouterLink :to="{ name: 'login' }" class="nav-link" aria-current="page">로그인</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink
-                :to="{ name: 'register' }"
-                class="nav-link"
-                aria-current="page"
-                >회원가입</RouterLink
-              >
+              <RouterLink :to="{ name: 'register' }" class="nav-link" aria-current="page">회원가입</RouterLink>
             </li>
           </ul>
         </template>
@@ -76,21 +60,12 @@ onMounted(async () => {
         <template v-else>
           <ul class="navbar-nav mb-2 me-2 mb-lg-0" id="header_nav_confirm_on">
             <li class="nav-item">
-              <button
-                class="nav-link"
-                aria-current="page"
-                @click="memberStore.logout()"
-              >
+              <button class="nav-link" aria-current="page" @click="handleLogout">
                 로그아웃
               </button>
             </li>
             <li class="nav-item">
-              <RouterLink
-                :to="{ name: 'mypage' }"
-                class="nav-link"
-                aria-current="page"
-                >마이페이지</RouterLink
-              >
+              <RouterLink :to="{ name: 'mypage' }" class="nav-link" aria-current="page">마이페이지</RouterLink>
             </li>
           </ul>
         </template>
@@ -100,5 +75,5 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Rampart+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rampart+One&display=swap');
 </style>

@@ -12,7 +12,7 @@ export const useMemberStore = defineStore("member", () => {
     email: "",
   });
 
-  const accessToken = ref();
+  const accessToken = ref(localStorage.getItem("accessToken") || "");
 
   function login(email, password) {
     return memberHttp
@@ -22,6 +22,7 @@ export const useMemberStore = defineStore("member", () => {
       })
       .then((res) => {
         accessToken.value = res.data.accessToken; // 토큰 저장
+        localStorage.setItem("accessToken", res.data.accessToken); // localStorage에 저장
         return accessToken.value; // 토큰 반환
       })
       .catch((err) => {
@@ -37,13 +38,32 @@ export const useMemberStore = defineStore("member", () => {
     member.email = "";
     console.log("로그아웃 성공");
   }
+  // function getUserData() {
+  //   return memberHttp
+  //     .get("/userinfo")
+  //     .then((res) => {
+  //       console.log("사용자 정보 가져오기 성공:", res.data);
+  //       member.id = res.data.id;
+  //       member.name = res.data.name;
+  //       member.email = res.data.email;
+  //     })
+  //     .catch((err) => {
+  //       console.error("사용자 정보 가져오기 실패:", err.response || err);
+  //       throw err;
+  //     });
+  // }
   function getUserData() {
     return memberHttp
-      .get("/userinfo")
+      .get("/userinfo", {
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      })
       .then((res) => {
         console.log("사용자 정보 가져오기 성공:", res.data);
-        member.id = res.data.id;
-        member.name = res.data.name;
+
+        member.id = res.data.memberId;
+        member.name = res.data.nickname; 
         member.email = res.data.email;
       })
       .catch((err) => {
@@ -141,6 +161,7 @@ export const useMemberStore = defineStore("member", () => {
     member,
     accessToken,
     login,
+    logout,
     register,
     updateUser,
     deleteUser,

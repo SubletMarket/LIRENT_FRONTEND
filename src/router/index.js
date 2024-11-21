@@ -7,6 +7,7 @@ import MyPageView from "@/views/MyPageView.vue";
 import UpdateUserView from "@/views/UpdateUserView.vue";
 import ResetPasswordView from "@/views/ResetPasswordView.vue";
 import HomeBoardDetail from "@/components/board/HomeBoardDetail.vue";
+import ContractView from "@/views/ContractView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,11 @@ const router = createRouter({
       path: "/qna",
       name: "qna",
       component: QuestionView,
+    },
+    {
+      path: "/contract",
+      name: "contract",
+      component: ContractView,
     },
   ],
 });
