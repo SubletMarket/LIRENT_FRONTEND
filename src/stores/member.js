@@ -12,7 +12,9 @@ export const useMemberStore = defineStore("member", () => {
     email: "",
   });
 
-  const accessToken = ref();
+  const accessToken = ref(
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJtZW1iZXJJZCI6MSwic3ViIjoiYWNjZXNzLXRva2VuIiwiaWF0IjoxNzMyMTUyODY5LCJleHAiOjE5MTIxNTI4Njl9.HVTXS4N-hsq2K9b_7NwaiRy-RXZyXMvJYNfFbheNbs8"
+  );
 
   function login(email, password) {
     return memberHttp
@@ -21,7 +23,6 @@ export const useMemberStore = defineStore("member", () => {
         password,
       })
       .then((res) => {
-        console.log(res.data);
         accessToken.value = res.data.accessToken; // 토큰 저장
         return accessToken.value; // 토큰 반환
       })

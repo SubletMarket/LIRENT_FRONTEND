@@ -43,16 +43,20 @@ function noticeAxios() {
   return createAxiosInstance(VITE_NOTICE_API_URL, true);
 }
 
-function homeAxios() {
-  return createAxiosInstance(VITE_HOME_API_URL, true);
+function subleaseAxios() {
+  return createAxiosInstance(VITE_SUBLEASE_API_URL, true);
 }
 
-function homeDealAxios() {
-  return createAxiosInstance(VITE_HOMEDEAL_API_URL, true);
-}
+// function homeAxios() {
+//   return createAxiosInstance(VITE_HOME_API_URL, true);
+// }
 
-function regcodeAxios() {
-  return createAxiosInstance(VITE_REGCODE_API_URL, false);
-}
+// function homeDealAxios() {
+//   return createAxiosInstance(VITE_HOMEDEAL_API_URL, true);
+// }
 
-export { memberAxios, noticeAxios, homeAxios, regcodeAxios, homeDealAxios, subleaseAxios};
+// function regcodeAxios() {
+//   return createAxiosInstance(VITE_REGCODE_API_URL, false);
+// }
+
+export { memberAxios, noticeAxios, homeAxios, regcodeAxios, homeDealAxios };
