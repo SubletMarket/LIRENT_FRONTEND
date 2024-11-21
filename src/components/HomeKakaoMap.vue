@@ -1,30 +1,94 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
+import { subleaseAxios } from "@/util/http-commons";
+import { useMemberStore } from "@/stores/member";
 
-const props = defineProps({
-  selectedApt: Object,
-});
+// 피니아
+const memberStore = useMemberStore();
+// 통신
+const subleaseHttp = subleaseAxios();
+
+// 변수들
 const mapInstance = ref();
+const subleases = reactive({});
 
-onMounted(() => {
+onMounted(async () => {
+  // 카카오 지도 생성
   mapInstance.value = new KakaoMap();
+
+  await mapInstance.value.loadKakaoMapAPI();
+  // 현재 전대차 매물 불러와서 지도에 표시
+  await initSubleases();
+
+  memberStore.getUser();
+});
+
+async function initSubleases() {
+  const { data } = await subleaseHttp.get("");
+  subleases.value = data;
+}
+
+// sublease 목록이 변하면 지도에 오버레이 업데이트
+watch(subleases, (newVal, oldVal) => {
+  console.log(newVal.value);
+
+  for (const sublease of newVal.value) {
+    const adjustedPrice = sublease.price / 10000;
+    const content = `
+            <div style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              height: 40px;
+              background-color: white;
+              color: black;
+              font-size: 14px;
+              font-weight: bold;
+              border: 2px solid black;
+              border-radius: 10px;
+              padding: 5px;
+              text-align: center;
+              box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);">
+              ${adjustedPrice}만원 / 하루
+            </div>`;
+
+    mapInstance.value.setOverlay(
+      {
+        latitude: sublease.latitude,
+        longitude: sublease.longitude,
+      },
+      content
+    );
+  }
+
+  // mapInstance.setOverlay();
+  console.log("WATCH 실행됨");
+  console.log(newVal.value);
 });
 
 class KakaoMap {
   map;
-  customOverlay;
+  customOverlaies = [];
+
   constructor() {
-    if (window.kakao && window.kakao.maps) {
+    this.loadKakaoMapAPI().then(() => {
       this.initMap();
-    } else {
-      const script = document.createElement("script");
-      /* global kakao */
-      // script가 로드된 후 실행될 함수 정의
-      script.onload = () => kakao.maps.load(this.initMap.bind(this));
-      script.src =
-        "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=53145e5b6696588dc70ac4fcb0dda36a";
-      document.head.appendChild(script);
-    }
+    });
+  }
+
+  loadKakaoMapAPI() {
+    return new Promise((resolve, reject) => {
+      if (window.kakao && window.kakao.maps) {
+        resolve(); // 이미 로드된 경우
+      } else {
+        const script = document.createElement("script");
+        script.onload = () => kakao.maps.load(resolve); // 로드 후 resolve 호출
+        script.onerror = reject; // 로드 실패 시 reject 호출
+        script.src =
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=53145e5b6696588dc70ac4fcb0dda36a";
+        document.head.appendChild(script);
+      }
+    });
   }
 
   initMap() {
@@ -44,21 +108,22 @@ class KakaoMap {
       coords.longitude
     );
 
-    this.customOverlay = new kakao.maps.CustomOverlay({
+    const newOverlay = new kakao.maps.CustomOverlay({
       position: kakaoCoords,
       content: content,
       xAnchor: 0.3,
       yAnchor: 0.91,
     });
 
-    console.log("map set");
-    this.customOverlay.setMap(this.map);
+    newOverlay.setMap(this.map);
+    this.customOverlaies.push(newOverlay);
   }
 
   deleteOverlay() {
-    if (this.customOverlay) {
-      this.customOverlay.setMap(null);
+    for (const overlay of this.customOverlaies) {
+      overlay.setMap(null);
     }
+    this.customOverlaies = {};
   }
 
   setCenter(coords) {
