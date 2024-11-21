@@ -6,7 +6,6 @@ import QuestionView from "@/views/QuestionView.vue";
 import MyPageView from "@/views/MyPageView.vue";
 import UpdateUserView from "@/views/UpdateUserView.vue";
 import ResetPasswordView from "@/views/ResetPasswordView.vue";
-import HomeBoardMain from "@/components/board/HomeBoardMain.vue";
 import HomeBoardDetail from "@/components/board/HomeBoardDetail.vue";
 
 const router = createRouter({

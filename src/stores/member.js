@@ -11,7 +11,9 @@ export const useMemberStore = defineStore("member", () => {
     email: "",
   });
 
-  const accessToken = ref();
+  const accessToken = ref(
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJtZW1iZXJJZCI6MSwic3ViIjoiYWNjZXNzLXRva2VuIiwiaWF0IjoxNzMyMTUyODY5LCJleHAiOjE5MTIxNTI4Njl9.HVTXS4N-hsq2K9b_7NwaiRy-RXZyXMvJYNfFbheNbs8"
+  );
 
   function login(email, password) {
     memberHttp
@@ -115,12 +117,25 @@ export const useMemberStore = defineStore("member", () => {
       .catch((err) => {});
   }
 
+  function getUser() {
+    memberHttp
+      .get("", {
+        headers: {
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      })
+      .then(({ data }) => {
+        console.log(data);
+      });
+  }
+
   return {
-    member,
+    accessToken,
     login,
     register,
     updateUser,
     deleteUser,
     resetPassword,
+    getUser,
   };
 });
