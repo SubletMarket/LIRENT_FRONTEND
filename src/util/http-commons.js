@@ -1,12 +1,7 @@
 import axios from "axios";
 
-const {
-  VITE_MEMBER_API_URL,
-  VITE_NOTICE_API_URL,
-  VITE_HOME_API_URL,
-  VITE_REGCODE_API_URL,
-  VITE_HOMEDEAL_API_URL,
-} = import.meta.env;
+const { VITE_MEMBER_API_URL, VITE_NOTICE_API_URL, VITE_SUBLEASE_API_URL } =
+  import.meta.env;
 
 function createAxiosInstance(baseUrl, credentials) {
   const instance = axios.create({
@@ -14,6 +9,7 @@ function createAxiosInstance(baseUrl, credentials) {
     headers: {
       "Content-Type": "application/json;charset=utf-8",
     },
+<<<<<<< HEAD
     withCredentials: credentials,
   });
 
@@ -25,6 +21,9 @@ function createAxiosInstance(baseUrl, credentials) {
     }
     console.log("Axios 요청 설정:", config);
     return config;
+=======
+    withCredentials: credientials,
+>>>>>>> 4b94aaa9f3bd1f08106d8864f34e77e8db0689ca
   });
 
   return instance;
@@ -38,16 +37,20 @@ function noticeAxios() {
   return createAxiosInstance(VITE_NOTICE_API_URL, true);
 }
 
-function homeAxios() {
-  return createAxiosInstance(VITE_HOME_API_URL, true);
+function subleaseAxios() {
+  return createAxiosInstance(VITE_SUBLEASE_API_URL, true);
 }
 
-function homeDealAxios() {
-  return createAxiosInstance(VITE_HOMEDEAL_API_URL, true);
-}
+// function homeAxios() {
+//   return createAxiosInstance(VITE_HOME_API_URL, true);
+// }
 
-function regcodeAxios() {
-  return createAxiosInstance(VITE_REGCODE_API_URL, false);
-}
+// function homeDealAxios() {
+//   return createAxiosInstance(VITE_HOMEDEAL_API_URL, true);
+// }
 
-export { memberAxios, noticeAxios, homeAxios, regcodeAxios, homeDealAxios };
+// function regcodeAxios() {
+//   return createAxiosInstance(VITE_REGCODE_API_URL, false);
+// }
+
+export { memberAxios, noticeAxios, subleaseAxios };
