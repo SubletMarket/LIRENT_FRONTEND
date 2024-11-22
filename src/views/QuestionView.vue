@@ -165,33 +165,36 @@
 
 <template>
   <div class="container mt-5">
-    <h2 class="text-center mb-4">게시판</h2>
+    <h2 class="text-center mb-4">📋 게시판</h2>
+
     <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead class="table-primary text-center">
-          <tr>
-            <th>카테고리</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>작성일</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(qna, index) in list" :key="qna.boardId" class="text-center">
-            <td>{{ qna.category }}</td>
-            <td>
-              <a href="#" @click.prevent="openDetail(qna.boardId)" class="text-decoration-none">
-                {{ qna.title }}
-              </a>
-            </td>
-            <td>{{ qna.nickname }}</td>
-            <td>{{ formatDate(qna.createdDate) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <table class="table table-bordered table-hover align-middle" style="border: 2px solid black;">
+    <thead class="text-center" style="background-color: #007bff; color: white; font-family: 'Arial', sans-serif; font-weight: bold;">
+      <tr style="border: 2px solid black;">
+        <th style="border: 2px solid black; width: 15%;">카테고리</th>
+        <th style="border: 2px solid black; width: 50%;">제목</th>
+        <th style="border: 2px solid black; width: 20%;">작성자</th>
+        <th style="border: 2px solid black; width: 15%;">작성일</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(qna, index) in list" :key="qna.boardId" class="text-center" style="border: 2px solid black;">
+        <td style="border: 2px solid black;"><span class="badge bg-primary">{{ qna.category }}</span></td>
+        <td style="border: 2px solid black;">
+          <a href="#" @click.prevent="openDetail(qna.boardId)" class="text-decoration-none">
+            <strong>{{ qna.title }}</strong>
+          </a>
+        </td>
+        <td style="border: 2px solid black;">{{ qna.nickname }}</td>
+        <td style="border: 2px solid black;">{{ formatDate(qna.createdDate) }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+    <!-- 글쓰기 버튼 -->
     <div class="d-flex justify-content-end mt-3">
-      <button class="btn btn-primary" @click="writeQna">글쓰기</button>
+      <button class="btn btn-success px-4 py-2" @click="writeQna">✍ 글쓰기</button>
     </div>
 
     <!-- 글쓰기 모달 -->
@@ -204,7 +207,7 @@
     >
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header bg-success text-white">
             <h1 class="modal-title fs-5" id="writeModalLabel">게시글 작성</h1>
             <button
               type="button"
@@ -226,13 +229,12 @@
             </div>
             <div class="mb-3">
               <label for="category" class="form-label">카테고리</label>
-              <input
-                type="text"
-                class="form-control"
-                id="category"
-                v-model="currentQna.category"
-                placeholder="카테고리를 입력하세요"
-              />
+              <select class="form-select" id="category" v-model="currentQna.category" required>
+                <option value="" disabled>카테고리를 선택하세요</option>
+                <option value="[공지]">[공지]</option>
+                <option value="[잡담]">[잡담]</option>
+                <option value="[질문]">[질문]</option>
+              </select>
             </div>
             <div class="mb-3">
               <label for="content" class="form-label">내용</label>
@@ -246,8 +248,8 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @click="createQna">
-              작성
+            <button type="button" class="btn btn-success px-4 py-2" @click="createQna">
+              작성 완료
             </button>
           </div>
         </div>
@@ -264,18 +266,12 @@
     >
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header bg-primary text-white">
             <h1 class="modal-title fs-5" id="detailModalLabel">
               <div v-if="isEditMode">
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="currentQna.title"
-                />
+                <input type="text" class="form-control" v-model="currentQna.title" />
               </div>
-              <div v-else>
-                {{ currentQna.title }}
-              </div>
+              <div v-else>{{ currentQna.title }}</div>
             </h1>
             <button
               type="button"
@@ -284,67 +280,56 @@
               aria-label="Close"
             ></button>
           </div>
-
           <div class="modal-body">
             <p><strong>카테고리:</strong></p>
             <div v-if="isEditMode">
-              <input
-                type="text"
-                class="form-control"
-                v-model="currentQna.category"
-              />
+              <select class="form-select" v-model="currentQna.category">
+                <option value="[공지]">[공지]</option>
+                <option value="[잡담]">[잡담]</option>
+                <option value="[질문]">[질문]</option>
+              </select>
             </div>
-            <p v-else>{{ currentQna.category }}</p>
+            <p v-else><span class="badge bg-info text-dark">{{ currentQna.category }}</span></p>
 
             <p><strong>작성자:</strong> {{ currentQna.nickname }}</p>
-
             <p><strong>내용:</strong></p>
             <div v-if="isEditMode">
-              <textarea
-                class="form-control"
-                rows="5"
-                v-model="currentQna.context"
-              ></textarea>
+              <textarea class="form-control" rows="5" v-model="currentQna.context"></textarea>
             </div>
             <p v-else>{{ currentQna.context }}</p>
           </div>
-
           <div class="modal-footer">
-            <!-- 수정 모드 버튼 -->
             <button
               v-if="isMyPost && !isEditMode"
-              class="btn btn-primary"
+              class="btn btn-warning px-4 py-2"
               @click="enableEditMode"
             >
-              수정
+              ✏ 수정
             </button>
-            <!-- 저장 버튼 -->
             <button
               v-if="isMyPost && isEditMode"
-              class="btn btn-success"
+              class="btn btn-success px-4 py-2"
               @click="updateQna"
             >
               저장
             </button>
-            <!-- 취소 버튼 -->
             <button
               v-if="isMyPost && isEditMode"
-              class="btn btn-secondary"
+              class="btn btn-secondary px-4 py-2"
               @click="cancelEditMode"
             >
               취소
             </button>
-            <!-- 삭제 버튼 -->
             <button
               v-if="isMyPost && !isEditMode"
-              class="btn btn-danger"
+              class="btn btn-danger px-4 py-2"
               @click="deleteQna"
             >
-              삭제
+              🗑 삭제
             </button>
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-secondary px-4 py-2"
               data-bs-dismiss="modal"
             >
               닫기
@@ -355,6 +340,7 @@
     </div>
   </div>
 </template>
+
 
 <style scoped>
 h2 {
