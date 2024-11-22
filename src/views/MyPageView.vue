@@ -33,13 +33,12 @@ const deleteMember = async () => {
       console.error(error.message);
     }
   }
-}
+};
 
 // 페이지로 보내야 할 때
 const navigateTo = (path) => {
   router.push({ path: `/${path}` });
 };
-
 </script>
 
 <template>
@@ -85,7 +84,11 @@ const navigateTo = (path) => {
                     v-model="store.member.email"
                   />
                 </div>
-                <button @click="navigateTo('updateUser')" class="btn btn-primary btn-block mt-3" type="button">
+                <button
+                  @click="navigateTo('updateUser')"
+                  class="btn btn-primary btn-block mt-3"
+                  type="button"
+                >
                   정보 수정
                 </button>
               </form>
@@ -106,6 +109,4 @@ const navigateTo = (path) => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
