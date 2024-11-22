@@ -1,7 +1,11 @@
 import axios from "axios";
 
-const { VITE_MEMBER_API_URL, VITE_NOTICE_API_URL, VITE_SUBLEASE_API_URL } =
-  import.meta.env;
+const {
+  VITE_MEMBER_API_URL,
+  VITE_NOTICE_API_URL,
+  VITE_SUBLEASE_API_URL,
+  VITE_CHATS_API_URL,
+} = import.meta.env;
 
 function createAxiosInstance(baseUrl, credentials) {
   const instance = axios.create({
@@ -36,4 +40,8 @@ function noticeAxios() {
   return createAxiosInstance(VITE_NOTICE_API_URL, true);
 }
 
-export { memberAxios, noticeAxios, subleaseAxios };
+function chatsAxios() {
+  return createAxiosInstance(VITE_CHATS_API_URL, true);
+}
+
+export { memberAxios, noticeAxios, subleaseAxios, chatsAxios };
