@@ -220,7 +220,10 @@ class KakaoMap {
 <style scoped>
 #map {
   width: 100%;
-  height: calc(100vh - 56px);
-  aspect-ratio: 1;
+  height: 100vh; /* 화면 전체 높이 */
+  position: absolute; /* 지도 절대 위치 */
+  top: 0; /* 상단부터 시작 */
+  left: 0; /* 왼쪽부터 시작 */
+  z-index: 1; /* 네브바보다 뒤에 위치 */
 }
 </style>

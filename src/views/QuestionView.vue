@@ -8,7 +8,6 @@ const memberStore = useMemberStore();
 const noticeHttp = noticeAxios();
 const isEditMode = ref(false);
 
-
 const list = ref([]);
 const currentQna = ref({ title: "", context: "", category: "", nickname: "" });
 const member = memberStore.member;
@@ -21,7 +20,9 @@ const isLoggedIn = computed(() => !!memberStore.accessToken);
 
 // 본인 작성 글 여부 확인
 const isMyPost = computed(() => {
-  return isLoggedIn.value && currentQna.value.memberId === memberStore.member.id;
+  return (
+    isLoggedIn.value && currentQna.value.memberId === memberStore.member.id
+  );
 });
 
 // 공지사항 목록 로드
@@ -54,7 +55,11 @@ function writeQna() {
 
 // 공지사항 작성
 function createQna() {
-  if (!currentQna.value.title || !currentQna.value.context || !currentQna.value.category) {
+  if (
+    !currentQna.value.title ||
+    !currentQna.value.context ||
+    !currentQna.value.category
+  ) {
     alert("제목, 내용, 카테고리를 모두 입력해주세요.");
     return;
   }
@@ -131,7 +136,11 @@ function cancelEditMode() {
 }
 // 공지사항 수정
 function updateQna() {
-  if (!currentQna.value.title || !currentQna.value.context || !currentQna.value.category) {
+  if (
+    !currentQna.value.title ||
+    !currentQna.value.context ||
+    !currentQna.value.category
+  ) {
     alert("제목, 내용, 카테고리를 모두 입력해주세요.");
     return;
   }
@@ -158,7 +167,6 @@ function updateQna() {
   <div>
     <div class="container mt-4">
       <h2>게시판</h2>
-      <button class="btn btn-primary mb-3" @click="writeQna">글쓰기</button>
       <table class="table table-hover">
         <thead>
           <tr>
@@ -172,67 +180,118 @@ function updateQna() {
           <tr v-for="(qna, index) in list" :key="qna.boardId">
             <td>{{ qna.category }}</td>
             <td>
-              <a href="#" @click.prevent="openDetail(qna.boardId)">{{ qna.title }}</a>
+              <a href="#" @click.prevent="openDetail(qna.boardId)">{{
+                qna.title
+              }}</a>
             </td>
             <td>{{ qna.nickname }}</td>
             <td>{{ formatDate(qna.createdDate) }}</td>
           </tr>
         </tbody>
       </table>
+      <div class="text-end">
+        <button class="btn btn-primary mb-3" @click="writeQna">글쓰기</button>
+      </div>
     </div>
 
     <!-- 글쓰기 모달 -->
-    <div class="modal fade" id="writeModal" tabindex="-1" aria-labelledby="writeModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="writeModal"
+      tabindex="-1"
+      aria-labelledby="writeModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="writeModalLabel">게시글 작성</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="container mt-4">
               <div class="mb-3">
                 <label for="title" class="form-label">제목</label>
-                <input type="text" class="form-control" id="title" v-model="currentQna.title" />
+                <input
+                  type="text"
+                  class="form-control"
+                  id="title"
+                  v-model="currentQna.title"
+                />
               </div>
               <div class="mb-3">
                 <label for="category" class="form-label">카테고리</label>
-                <input type="text" class="form-control" id="category" v-model="currentQna.category" />
+                <input
+                  type="text"
+                  class="form-control"
+                  id="category"
+                  v-model="currentQna.category"
+                />
               </div>
               <div class="mb-3">
                 <label for="content" class="form-label">내용</label>
-                <textarea class="form-control" id="content" rows="5" v-model="currentQna.context"></textarea>
+                <textarea
+                  class="form-control"
+                  id="content"
+                  rows="5"
+                  v-model="currentQna.context"
+                ></textarea>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @click="createQna">작성</button>
+            <button type="button" class="btn btn-primary" @click="createQna">
+              작성
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 공지사항 상세보기 모달 -->
-    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="detailModal"
+      tabindex="-1"
+      aria-labelledby="detailModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="detailModalLabel">
               <div v-if="isEditMode">
-                <input type="text" class="form-control" v-model="currentQna.title" />
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="currentQna.title"
+                />
               </div>
               <div v-else>
                 {{ currentQna.title }}
               </div>
             </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
 
           <div class="modal-body">
             <p><strong>카테고리:</strong></p>
             <div v-if="isEditMode">
-              <input type="text" class="form-control" v-model="currentQna.category" />
+              <input
+                type="text"
+                class="form-control"
+                v-model="currentQna.category"
+              />
             </div>
             <p v-else>{{ currentQna.category }}</p>
 
@@ -240,30 +299,55 @@ function updateQna() {
 
             <p><strong>내용:</strong></p>
             <div v-if="isEditMode">
-              <textarea class="form-control" rows="5" v-model="currentQna.context"></textarea>
+              <textarea
+                class="form-control"
+                rows="5"
+                v-model="currentQna.context"
+              ></textarea>
             </div>
             <p v-else>{{ currentQna.context }}</p>
           </div>
 
-
           <div class="modal-footer">
             <!-- 수정 모드 버튼 -->
-            <button v-if="isMyPost && !isEditMode" class="btn btn-primary" @click="enableEditMode">
+            <button
+              v-if="isMyPost && !isEditMode"
+              class="btn btn-primary"
+              @click="enableEditMode"
+            >
               수정
             </button>
             <!-- 저장 버튼 -->
-            <button v-if="isMyPost && isEditMode" class="btn btn-success" @click="updateQna">
+            <button
+              v-if="isMyPost && isEditMode"
+              class="btn btn-success"
+              @click="updateQna"
+            >
               저장
             </button>
             <!-- 취소 버튼 (선택 사항) -->
-            <button v-if="isMyPost && isEditMode" class="btn btn-secondary" @click="cancelEditMode">
+            <button
+              v-if="isMyPost && isEditMode"
+              class="btn btn-secondary"
+              @click="cancelEditMode"
+            >
               취소
             </button>
             <!-- 삭제 버튼 -->
-            <button v-if="isMyPost && !isEditMode" class="btn btn-danger" @click="deleteQna">
+            <button
+              v-if="isMyPost && !isEditMode"
+              class="btn btn-danger"
+              @click="deleteQna"
+            >
               삭제
             </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              닫기
+            </button>
           </div>
         </div>
       </div>
