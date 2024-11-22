@@ -48,10 +48,8 @@ export const useMemberStore = defineStore("member", () => {
       .then((res) => {
         console.log("사용자 정보 가져오기 성공:", res.data);
         member.id = res.data.memberId;
+        member.name = res.data.nickname;
         member.email = res.data.email;
-        member.phone = res.data.phone;
-        member.address = res.data.address;
-        member.nickname = res.data.nickname;         
       })
       .catch((err) => {
         console.error("사용자 정보 가져오기 실패:", err.response || err);
@@ -64,15 +62,14 @@ export const useMemberStore = defineStore("member", () => {
     phone,
     address,
     nickname,
-    bcode,
-    bun,
-    ji,
-    dong,
-    ho,
+    park,
+    buildingElevatorNum,
     floor,
     area,
     rooms,
     bathrooms,
+    latitude,
+    longitude,
   }) {
     memberHttp
       .post("", {
@@ -81,15 +78,14 @@ export const useMemberStore = defineStore("member", () => {
         phone,
         address,
         nickname,
-        bcode,
-        bun,
-        ji,
-        dong,
-        ho,
+        park,
+        buildingElevatorNum,
         floor,
         area,
         rooms,
         bathrooms,
+        latitude,
+        longitude,
       })
       .then((res) => {
         console.log("Register 성공함:", res);

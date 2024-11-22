@@ -6,7 +6,7 @@ import QuestionView from "@/views/QuestionView.vue";
 import MyPageView from "@/views/MyPageView.vue";
 import UpdateUserView from "@/views/UpdateUserView.vue";
 import ResetPasswordView from "@/views/ResetPasswordView.vue";
-import HomeBoardDetail from "@/components/board/HomeBoardDetail.vue";
+import HomeDetail from "@/components/detail/HomeDetail.vue";
 import ContractView from "@/views/ContractView.vue";
 
 const router = createRouter({
@@ -20,7 +20,7 @@ const router = createRouter({
         {
           path: "detail/:subleaseId",
           name: "detail",
-          component: HomeBoardDetail,
+          component: HomeDetail,
           props: true,
         },
       ],
