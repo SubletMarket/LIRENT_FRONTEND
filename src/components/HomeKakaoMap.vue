@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from "vue";
+import { onBeforeMount, onMounted, onUpdated, reactive, ref, watch } from "vue";
 import { subleaseAxios } from "@/util/http-commons";
 import { useMemberStore } from "@/stores/member";
 import { useRoute, useRouter } from "vue-router";
@@ -20,32 +20,39 @@ const subleases = reactive({});
 // 경로가 /detail/{subleasaeId} 일 경우, 해당 subleaseId값
 const sublease = reactive({});
 
-onMounted(async () => {
+onBeforeMount(async () => {
+  console.log("onBeforeMount");
+
   // 카카오 지도 생성
   mapInstance.value = new KakaoMap();
 
   await mapInstance.value.loadKakaoMapAPI();
-  // 현재 전대차 매물 불러와서 지도에 표시
-  await initSubleases();
+  subleases.value = await getSubleases();
+
+  console.log(subleases.value);
 
   // detail의 subleaseID값이 있으면 위치 가져오기
   if (route.params.subleaseId) {
-    const data = await getSublease(route.params.subleaseId);
-    sublease.value = data;
-    mapCenter.value = { latitude: data.latitude, longitude: data.longitude };
-    setOverlaiesColor(route.params.subleaseId);
+    sublease.value = await getSublease(route.params.subleaseId);
+    mapCenter.value = {
+      latitude: sublease.value.latitude,
+      longitude: sublease.value.longitude,
+    };
   } else {
-    console.log("get my location");
-    getCurrentCoord();
+    mapCenter.value = await getCurrentCoord();
   }
+  // 현재 전대차 매물 불러와서 지도에 표시
+  setOverlaiesColor(route.params.subleaseId);
+});
+
+onMounted(async () => {});
+
+onUpdated(() => {
+  setOverlaiesColor(route.params.subleaseId);
 });
 
 // sublease 목록이 변하면 지도에 오버레이 업데이트
 watch(subleases, (newVal, oldVal) => {
-  console.log("DRAWING OVERLAY..");
-
-  console.log(newVal.value);
-
   for (const sublease of newVal.value) {
     const adjustedPrice = sublease.price / 10000;
     const content = document.createElement("div");
@@ -77,7 +84,6 @@ watch(subleases, (newVal, oldVal) => {
       content
     );
   }
-  console.log(mapInstance.value.customOverlaies);
 });
 
 // subleaseId 변화에 따른 Detail 화면 변화
@@ -97,23 +103,22 @@ watch(mapCenter, (newVal, oldVal) => {
   mapInstance.value.setCenter(newVal.value);
 });
 
-async function initSubleases() {
+async function getSubleases() {
   const { data } = await subleaseHttp.get("");
-  subleases.value = data;
+  return data;
 }
 
 function getCurrentCoord() {
   console.log("HomeKakaoMap getCurrentCoord()");
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const coord = pos.coords;
-      mapCenter.value = {
-        latitude: coord.latitude,
-        longitude: coord.longitude,
-      };
-    });
-  }
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const coord = pos.coords;
+        resolve({ latitude: coord.latitude, longitude: coord.longitude });
+      });
+    }
+  });
 }
 
 async function getSublease(id) {
@@ -176,7 +181,6 @@ class KakaoMap {
   }
 
   setOverlay(subleaseId, coords, content) {
-    console.log("KakaoMap.setOverlay executed");
     const kakaoCoords = new kakao.maps.LatLng(
       coords.latitude,
       coords.longitude
