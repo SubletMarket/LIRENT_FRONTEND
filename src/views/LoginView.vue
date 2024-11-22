@@ -12,7 +12,6 @@ const password = ref("");
 const saveIdChecked = ref(false);
 
 onMounted(() => {
-  // 쿠키에서 userId 값을 가져와 체크박스 상태 설정
   const savedUserId = document.cookie.replace(
     /(?:(?:^|.*;\s*)userId\s*\=\s*([^;]*).*$)|^.*$/,
     "$1"
@@ -25,23 +24,18 @@ onMounted(() => {
 
 const handleLogin = async () => {
   try {
-    console.log("1")
     const token = await memberStore.login(userId.value, password.value);
-    console.log("서버에서 받은 토큰:", token);
 
     if (!token) {
       throw new Error("로그인 실패: 토큰이 없습니다.");
     }
-
     // 토큰 저장
     localStorage.setItem("accessToken", token);
-    console.log("로그인 성공");
 
     // 사용자 정보 가져오기
     await memberStore.getUserData();
     router.push("/"); // 로그인 후 홈으로 이동
   } catch (error) {
-    console.log("2")
     console.error("로그인 오류:", error);
 
     if (error.response && error.response.status === 404) {
@@ -59,57 +53,91 @@ const navigateTo = (path) => {
 </script>
 
 <template>
-  <div>
-    <!-- 로그인 실패 메시지 -->
-    <div v-if="loginFailMessage" style="color: red">{{ loginFailMessage }}</div>
+  <div class="container">
+    <div class="row justify-content-center py-5">
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-5">
+            <h2 class="text-center mb-4">로그인</h2>
+            <!-- 로그인 실패 메시지 -->
+            <div v-if="loginFailMessage" class="text-danger text-center mb-3">
+              {{ loginFailMessage }}
+            </div>
 
-    <div class="container">
-      <h2 class="text-center">로그인</h2>
+            <!-- 로그인 폼 -->
+            <form @submit.prevent="handleLogin">
+              <div class="mb-3">
+                <label for="username" class="form-label">아이디</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="userId"
+                  id="username"
+                  placeholder="아이디를 입력하세요"
+                  required
+                />
+              </div>
 
-      <!-- 로그인 폼 -->
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="username">아이디</label>
-          <input
-            type="text"
-            class="form-control"
-            v-model="userId"
-            id="username"
-            placeholder="아이디를 입력하세요"
-            required
-          />
-          <label for="saveId">아이디 저장</label>
-          <input type="checkbox" v-model="saveIdChecked" id="saveId" />
+              <div class="mb-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  v-model="password"
+                  id="password"
+                  placeholder="비밀번호를 입력하세요"
+                  required
+                />
+              </div>
+
+              <div class="form-check mb-3">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  v-model="saveIdChecked"
+                  id="saveId"
+                />
+                <label class="form-check-label" for="saveId">아이디 저장</label>
+              </div>
+
+              <button class="btn btn-primary w-100 py-2" type="submit">
+                로그인
+              </button>
+            </form>
+
+            <div class="text-center mt-4">
+              <router-link to="/register" class="text-decoration-none">
+                계정이 없으신가요? <strong>회원가입</strong>
+              </router-link>
+            </div>
+            <div class="text-center mt-2">
+              <router-link to="/resetPassword" class="text-decoration-none">
+                비밀번호를 잊으셨나요? <strong>재설정하기</strong>
+              </router-link>
+            </div>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label for="password">비밀번호</label>
-          <input
-            type="password"
-            class="form-control"
-            v-model="password"
-            id="password"
-            placeholder="비밀번호를 입력하세요"
-            required
-          />
-        </div>
-
-        <button class="btn btn-primary btn-block" type="submit">로그인</button>
-      </form>
-
-      <div class="text-center mt-3">
-        <button @click="navigateTo('register')" class="btn btn-link">
-          계정이 없으신가요? 회원가입
-        </button>
-      </div>
-
-      <div class="text-center mt-3">
-        <button @click="navigateTo('resetPassword')" class="btn btn-link">
-          비밀번호를 잊으셨나요? 재설정하기
-        </button>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+
+<style scoped>
+body {
+  background-color: #f8f9fa;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.card-body {
+  background-color: #ffffff;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+}
+</style>

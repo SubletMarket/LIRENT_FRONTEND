@@ -97,7 +97,7 @@ const downloadFile = async () => {
 
 <template>
   <div class="container mt-4">
-    <h2>계약서 생성기</h2>
+    <h2 style="text-align: center;">계약서 생성기</h2>
     <form @submit.prevent="submitForm" class="mt-4">
       <div v-for="(value, key) in formData" :key="key" class="mb-3">
         <label :for="key" class="form-label">{{ key }}</label>

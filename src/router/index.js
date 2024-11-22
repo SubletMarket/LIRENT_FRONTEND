@@ -31,6 +31,11 @@ const router = createRouter({
       component: LoginView,
     },
     {
+      path: "/logout",
+      name: "logout",
+      redirect: { name: "login" }, // 로그아웃 시 로그인 화면으로 리다이렉트
+    },
+    {
       path: "/register",
       name: "register",
       component: RegisterView,

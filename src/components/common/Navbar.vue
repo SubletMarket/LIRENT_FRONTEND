@@ -1,8 +1,9 @@
 <script setup>
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import { useMemberStore } from "@/stores/member";
 import { computed, onMounted } from "vue";
 
+const router = useRouter();
 const memberStore = useMemberStore();
 
 // 로그인 상태를 계산 속성으로 정의
@@ -25,6 +26,7 @@ onMounted(async () => {
 const handleLogout = () => {
   memberStore.logout(); // 상태 초기화만 수행
   console.log("로그아웃 완료");
+  router.push({ name: "logout" }); // Vue Router를 사용해 로그인 페이지로 이동
 };
 </script>
 

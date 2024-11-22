@@ -23,6 +23,22 @@ const member = reactive({
   longitude: "",
 });
 
+const errors = reactive({
+  email: false,
+  password: false,
+  phone: false,
+  nickname: false,
+});
+
+function validateFields() {
+  errors.email = !member.email;
+  errors.password = !member.password;
+  errors.phone = !member.phone;
+  errors.nickname = !member.nickname;
+
+  return !errors.email && !errors.password && !errors.phone && !errors.nickname;
+}
+
 function setAddressData(data) {
   member.address = data.address;
   member.latitude = data.latitude;
@@ -30,15 +46,17 @@ function setAddressData(data) {
 }
 
 function regist() {
-  console.log("doRegist");
-  store.register(member);
+  if (validateFields()) {
+    console.log("doRegist");
+    store.register(member);
+  }
 }
 </script>
 
 <template>
   <div>
     <div class="container">
-      <form @submit.prevent="handleRegister" class="container py-5">
+      <form @submit.prevent="regist" class="container py-5">
         <div class="row justify-content-center">
           <div class="col-12 col-lg-8">
             <div class="card shadow-lg border-0">
@@ -47,58 +65,75 @@ function regist() {
 
                 <!-- 회원 정보 -->
                 <div class="mb-4">
-                  <h4 class="border-bottom pb-2 mb-3">회원 정보</h4>
+                  <h4 class="border-bottom pb-2 mb-3">회원 정보 (필수)</h4>
                   <div class="row g-3">
-                    <!-- 이메일 주소 & 비밀번호 -->
+                    <!-- 이메일 주소 -->
                     <div class="col-12 col-md-6">
                       <label for="email" class="form-label">이메일 주소</label>
                       <input
                         type="email"
                         class="form-control"
                         placeholder="이메일을 입력하세요"
-                        required
                         v-model="member.email"
+                        :class="{ 'is-invalid': errors.email }"
+                        required
                       />
+                      <div v-if="errors.email" class="invalid-feedback">
+                        이메일 주소를 입력하세요.
+                      </div>
                     </div>
+                    <!-- 비밀번호 -->
                     <div class="col-12 col-md-6">
                       <label for="pw" class="form-label">비밀번호</label>
                       <input
                         type="password"
                         class="form-control"
                         placeholder="비밀번호를 입력하세요"
-                        required
                         v-model="member.password"
+                        :class="{ 'is-invalid': errors.password }"
+                        required
                       />
+                      <div v-if="errors.password" class="invalid-feedback">
+                        비밀번호를 입력하세요.
+                      </div>
                     </div>
-                    <!-- 전화번호 & 닉네임 -->
+                    <!-- 전화번호 -->
                     <div class="col-12 col-md-6">
                       <label for="phone" class="form-label">전화번호</label>
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="전화번호를 입력하세요"
-                        required
+                        placeholder="010-0000-0000"
                         v-model="member.phone"
+                        :class="{ 'is-invalid': errors.phone }"
+                        required
                       />
+                      <div v-if="errors.phone" class="invalid-feedback">
+                        전화번호를 입력하세요.
+                      </div>
                     </div>
                     <div class="col-12 col-md-6">
-                      <label for="nickname" class="form-label">닉네임</label>
+                      <label for="nickname" class="form-label">이름</label>
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="닉네임을 입력하세요"
-                        required
+                        placeholder="이름을 입력하세요"
                         v-model="member.nickname"
+                        :class="{ 'is-invalid': errors.nickname }"
+                        required
                       />
+                      <div v-if="errors.nickname" class="invalid-feedback">
+                        닉네임을 입력하세요.
+                      </div>
                     </div>
-                    <!-- 주소 -->
-                    <RegisterAddress @load="setAddressData" />
                   </div>
                 </div>
 
                 <!-- 집 정보 -->
                 <div class="mb-4">
-                  <h4 class="border-bottom pb-2 mb-3">집 정보</h4>
+                  <h4 class="border-bottom pb-2 mb-3">집 정보 (선택사항)</h4>
+                  <RegisterAddress @load="setAddressData" />
+
                   <div class="row g-3">
                     <!-- 주차 가능 -->
                     <div
@@ -124,7 +159,6 @@ function regist() {
                         type="text"
                         class="form-control"
                         placeholder="입력"
-                        required
                         v-model="member.buildingElevatorNum"
                       />
                     </div>
@@ -135,7 +169,6 @@ function regist() {
                         type="text"
                         class="form-control"
                         placeholder="입력"
-                        required
                         v-model="member.floor"
                       />
                     </div>
@@ -146,7 +179,6 @@ function regist() {
                         type="text"
                         class="form-control"
                         placeholder="입력"
-                        required
                         v-model="member.area"
                       />
                     </div>
@@ -157,7 +189,6 @@ function regist() {
                         type="text"
                         class="form-control"
                         placeholder="입력"
-                        required
                         v-model="member.rooms"
                       />
                     </div>
@@ -170,7 +201,6 @@ function regist() {
                         type="text"
                         class="form-control"
                         placeholder="입력"
-                        required
                         v-model="member.bathrooms"
                       />
                     </div>
@@ -180,7 +210,7 @@ function regist() {
                 <!-- 가입 버튼 -->
                 <button
                   class="btn btn-primary w-100 py-2"
-                  @click.prevent="regist"
+                  type="submit"
                 >
                   가입하기
                 </button>
@@ -213,5 +243,14 @@ body {
 .form-control:focus {
   box-shadow: none;
   border-color: #80bdff;
+}
+
+.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  display: block;
+  color: #dc3545;
 }
 </style>
