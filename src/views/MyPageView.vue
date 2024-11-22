@@ -56,13 +56,13 @@ const navigateTo = (path) => {
               <!-- 회원 정보 수정 폼 -->
               <form>
                 <div class="form-group">
-                  <label for="name">이름</label>
+                  <label for="nickname">이름</label>
                   <input
                     type="text"
                     readonly
                     class="form-control-plaintext"
-                    id="name"
-                    v-model="store.member.name"
+                    id="nickname"
+                    v-model="store.member.nickname"
                   />
                 </div>
                 <div class="form-group">

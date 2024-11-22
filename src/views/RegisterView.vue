@@ -6,7 +6,7 @@ import { useMemberStore } from "@/stores/member";
 const router = useRouter();
 const store = useMemberStore();
 
-const name = ref("");
+const nickname = ref("");
 const id = ref("");
 const email = ref("");
 const pw = ref("");
@@ -21,7 +21,7 @@ const handleRegister = async () => {
 
   try {
     // 회원가입 API 호출
-    await store.register(id.value, pw.value, name.value, email.value);
+    await store.register(id.value, pw.value, nickname.value, email.value);
 
     // 회원가입 성공 시 로그인 화면으로 이동
     // TODO: 추후 회원가입하면 자동 로그인되도록..도 하고 싶어요
@@ -50,7 +50,7 @@ const handleRegister = async () => {
             type="text"
             class="form-control"
             id="username"
-            v-model="name"
+            v-model="nickname"
             placeholder="이름을 입력하세요"
             required
           />

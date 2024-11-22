@@ -8,7 +8,7 @@ export const useMemberStore = defineStore("member", () => {
   // 상태 관리 객체
   const member = reactive({
     id: "",
-    name: "",
+    nickname: "",
     email: "",
   });
 
@@ -34,24 +34,10 @@ export const useMemberStore = defineStore("member", () => {
     accessToken.value = ""; // 토큰 삭제
     localStorage.removeItem("accessToken"); // 저장된 토큰 삭제
     member.id = "";
-    member.name = "";
+    member.nickname = "";
     member.email = "";
     console.log("로그아웃 성공");
   }
-  // function getUserData() {
-  //   return memberHttp
-  //     .get("/userinfo")
-  //     .then((res) => {
-  //       console.log("사용자 정보 가져오기 성공:", res.data);
-  //       member.id = res.data.id;
-  //       member.name = res.data.name;
-  //       member.email = res.data.email;
-  //     })
-  //     .catch((err) => {
-  //       console.error("사용자 정보 가져오기 실패:", err.response || err);
-  //       throw err;
-  //     });
-  // }
   function getUserData() {
     return memberHttp
       .get("/userinfo", {
@@ -61,10 +47,11 @@ export const useMemberStore = defineStore("member", () => {
       })
       .then((res) => {
         console.log("사용자 정보 가져오기 성공:", res.data);
-
         member.id = res.data.memberId;
-        member.name = res.data.nickname; 
         member.email = res.data.email;
+        member.phone = res.data.phone;
+        member.address = res.data.address;
+        member.nickname = res.data.nickname;         
       })
       .catch((err) => {
         console.error("사용자 정보 가져오기 실패:", err.response || err);
@@ -112,10 +99,10 @@ export const useMemberStore = defineStore("member", () => {
       });
   }
 
-  function updateUser(pw, name, email) {
+  function updateUser(pw, nickname, email) {
     memberHttp
       .put("", {
-        name,
+        nickname,
         email,
         password: pw,
       })
@@ -133,7 +120,7 @@ export const useMemberStore = defineStore("member", () => {
       .then((res) => {
         // member 객체 초기화
         member.id = "";
-        member.name = "";
+        member.nickname = "";
         member.email = "";
       })
       .catch((err) => {
@@ -141,10 +128,10 @@ export const useMemberStore = defineStore("member", () => {
       });
   }
 
-  function resetPassword(name, email, userId, password) {
+  function resetPassword(nickname, email, userId, password) {
     memberHttp
       .put("/passwordReset", {
-        name,
+        nickname,
         email,
         userId,
         password,
