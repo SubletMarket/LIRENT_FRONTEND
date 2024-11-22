@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, watch } from "vue";
+import Datepicker from "vue3-datepicker";
 
 const props = defineProps({
   sublease: Object,
@@ -34,6 +35,8 @@ watch(
     rentPeriod.endDate = newVal;
   }
 );
+
+function makeDeal() {}
 </script>
 
 <template>
@@ -121,7 +124,9 @@ watch(
           </p>
 
           <div class="d-grid gap-2 mb-3">
-            <button class="btn btn-primary">예약요청하기</button>
+            <button class="btn btn-primary" @click.prevent="makeDeal">
+              예약하기
+            </button>
           </div>
         </template>
       </div>
