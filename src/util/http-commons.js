@@ -4,6 +4,7 @@ const {
   VITE_MEMBER_API_URL,
   VITE_NOTICE_API_URL,
   VITE_SUBLEASE_API_URL,
+  VITE_SUBLEASE_DEAL_API_URL,
   VITE_CHATS_API_URL,
 } = import.meta.env;
 
@@ -32,6 +33,10 @@ function subleaseAxios() {
   return createAxiosInstance(VITE_SUBLEASE_API_URL, true);
 }
 
+function subleaseDealAxios() {
+  return createAxiosInstance(VITE_SUBLEASE_DEAL_API_URL, true);
+}
+
 function memberAxios() {
   return createAxiosInstance(VITE_MEMBER_API_URL, true);
 }
@@ -44,4 +49,10 @@ function chatsAxios() {
   return createAxiosInstance(VITE_CHATS_API_URL, true);
 }
 
-export { memberAxios, noticeAxios, subleaseAxios, chatsAxios };
+export {
+  memberAxios,
+  noticeAxios,
+  subleaseAxios,
+  subleaseDealAxios,
+  chatsAxios,
+};

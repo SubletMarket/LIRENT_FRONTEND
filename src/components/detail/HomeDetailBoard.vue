@@ -1,14 +1,37 @@
 <script setup>
-import { computed, onMounted, reactive, watch } from "vue";
-import Datepicker from "vue3-datepicker";
+import { computed, onMounted, onUpdated, reactive, ref, watch } from "vue";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import { subleaseDealAxios } from "@/util/http-commons";
+
+const dealHttp = subleaseDealAxios();
 
 const props = defineProps({
   sublease: Object,
 });
 
+const deals = ref();
+
 const rentPeriod = reactive({
   startDate: "",
   endDate: "",
+});
+
+const pickerRentPeriod = reactive({
+  startDate: "",
+  endDate: "",
+});
+
+const disabledDates = computed(() => {
+  const dates = [];
+
+  if (deals.value) {
+    for (const deal of deals.value) {
+      console.log(deal);
+    }
+  }
+
+  //   return dates;
 });
 
 // 기간 계산용 computed
@@ -20,12 +43,21 @@ const dayDifference = computed(() => {
   return diffDays + 1; // 차이 반환
 });
 
+// 기간 선택완료 여부 확인용 computed
 const periodSelected = computed(() => {
   if (rentPeriod.startDate && rentPeriod.endDate) {
     return true;
   } else {
     return false;
   }
+});
+
+// 현재 매물의 예약 정보 가져오기
+onUpdated(() => {
+  console.log("BOARD SUBLEASEID CHANGED");
+  dealHttp.get(`/${props.sublease.subleaseId}`).then(({ data }) => {
+    deals.value = data;
+  });
 });
 
 // 기간 유효성 유지용 Watch
@@ -91,25 +123,19 @@ function makeDeal() {}
         </div>
         <!-- 날짜 선택 -->
         <div class="bg-light p-3 rounded">
-          <h6 class="fw-bold mb-3">날짜 선택</h6>
-          <div class="input-group">
-            <input
-              type="date"
-              class="form-control"
-              :min="props.sublease.startDate"
-              :max="props.sublease.endDate"
-              v-model="rentPeriod.startDate"
-            />
-            <span class="input-group-text">부터</span>
-            <input
-              type="date"
-              class="form-control"
-              :min="rentPeriod.startDate"
-              :max="props.sublease.endDate"
-              v-model="rentPeriod.endDate"
-            />
-            <span class="input-group-text">까지</span>
-          </div>
+          <h6 class="fw-bold mb-3 text-center">날짜 선택</h6>
+          <VueDatePicker
+            class="justify-content-center"
+            v-model="pickerRentPeriod.startDate"
+            inline
+            locale="ko"
+            :enable-time-picker="false"
+            prevent-min-max-navigation
+            :range="{ noDisabledRange: true }"
+            :min-date="props.sublease.startDate"
+            :max-date="props.sublease.endDate"
+            :disabled-dates="disabledDates"
+          />
         </div>
         <hr />
         <!-- 총비용 -->
