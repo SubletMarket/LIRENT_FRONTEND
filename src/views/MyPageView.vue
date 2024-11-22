@@ -103,13 +103,20 @@ const updateMember = async () => {
                   v-model="store.member.email" />
               </div>
 
+              <!-- 비밀번호 -->
+              <div class="form-group mb-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="text" :readonly="!isEditing" class="form-control" id="password"
+                  v-model="store.member.password" />
+              </div>
+
               <!-- 전화번호 -->
               <div class="form-group mb-3">
                 <label for="phone" class="form-label">전화번호</label>
                 <input type="text" :readonly="!isEditing" class="form-control" id="phone"
                   v-model="store.member.phone" />
               </div>
-
+              
               <!-- 주소 -->
               <div v-if="isEditing">
                 <div class="form-group mb-3">
