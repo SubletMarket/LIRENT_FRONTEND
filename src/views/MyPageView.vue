@@ -92,39 +92,69 @@ const updateMember = async () => {
               <!-- 이름 -->
               <div class="form-group mb-3">
                 <label for="nickname" class="form-label">이름</label>
-                <input type="text" :readonly="!isEditing" class="form-control" id="nickname"
-                  v-model="store.member.nickname" />
+                <input
+                  type="text"
+                  :readonly="!isEditing"
+                  class="form-control"
+                  id="nickname"
+                  v-model="store.member.nickname"
+                />
               </div>
 
               <!-- 이메일 -->
               <div class="form-group mb-3">
                 <label for="email" class="form-label">이메일</label>
-                <input type="text" :readonly="!isEditing" class="form-control" id="email"
-                  v-model="store.member.email" />
+                <input
+                  type="text"
+                  :readonly="!isEditing"
+                  class="form-control"
+                  id="email"
+                  v-model="store.member.email"
+                />
               </div>
 
               <!-- 비밀번호 -->
               <div class="form-group mb-3">
                 <label for="password" class="form-label">비밀번호</label>
-                <input type="text" :readonly="!isEditing" class="form-control" id="password"
-                  v-model="store.member.password" />
+                <input
+                  type="text"
+                  :readonly="!isEditing"
+                  class="form-control"
+                  id="password"
+                  v-model="store.member.password"
+                />
               </div>
 
               <!-- 전화번호 -->
               <div class="form-group mb-3">
                 <label for="phone" class="form-label">전화번호</label>
-                <input type="text" :readonly="!isEditing" class="form-control" id="phone"
-                  v-model="store.member.phone" />
+                <input
+                  type="text"
+                  :readonly="!isEditing"
+                  class="form-control"
+                  id="phone"
+                  v-model="store.member.phone"
+                />
               </div>
-              
+
               <!-- 주소 -->
               <div v-if="isEditing">
                 <div class="form-group mb-3">
                   <label for="address" class="form-label"></label>
                   <div v-if="isEditing">
-                    <RegisterAddress @load="setAddressData" :initial-address="store.member.address" />
+                    <RegisterAddress
+                      @load="setAddressData"
+                      :initial-address="store.member.address"
+                    />
                   </div>
-                  <input v-else type="text" readonly class="form-control" id="address" v-model="store.member.address" />
+                  <input
+                    v-else
+                    type="text"
+                    readonly
+                    class="form-control"
+                    id="address"
+                    v-model="store.member.address"
+                  />
                 </div>
 
                 <!-- 선택 정보 (토글 시 표시) -->
@@ -132,53 +162,96 @@ const updateMember = async () => {
                 <!-- 주차 가능 -->
                 <div class="form-group mb-3">
                   <label for="park" class="form-label">주차 가능 여부</label>
-                  <input type="checkbox" class="form-check-input" id="park" v-model="store.member.park" />
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="park"
+                    v-model="store.member.park"
+                  />
                 </div>
 
                 <!-- 승강기 개수 -->
                 <div class="form-group mb-3">
                   <label for="elevator" class="form-label">승강기 개수</label>
-                  <input type="number" class="form-control" id="elevator" v-model="store.member.buildingElevatorNum" />
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="elevator"
+                    v-model="store.member.buildingElevatorNum"
+                  />
                 </div>
 
                 <!-- 층수 -->
                 <div class="form-group mb-3">
                   <label for="floor" class="form-label">층수</label>
-                  <input type="number" class="form-control" id="floor" v-model="store.member.floor" />
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="floor"
+                    v-model="store.member.floor"
+                  />
                 </div>
 
                 <!-- 평수 -->
                 <div class="form-group mb-3">
                   <label for="area" class="form-label">평수</label>
-                  <input type="number" class="form-control" id="area" v-model="store.member.area" />
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="area"
+                    v-model="store.member.area"
+                  />
                 </div>
 
                 <!-- 방 개수 -->
                 <div class="form-group mb-3">
                   <label for="rooms" class="form-label">방 개수</label>
-                  <input type="number" class="form-control" id="rooms" v-model="store.member.rooms" />
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="rooms"
+                    v-model="store.member.rooms"
+                  />
                 </div>
 
                 <!-- 화장실 개수 -->
                 <div class="form-group mb-3">
                   <label for="bathrooms" class="form-label">화장실 개수</label>
-                  <input type="number" class="form-control" id="bathrooms" v-model="store.member.bathrooms" />
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="bathrooms"
+                    v-model="store.member.bathrooms"
+                  />
                 </div>
               </div>
 
               <!-- 수정 및 저장 버튼 -->
               <div class="d-flex justify-content-end">
-                <button v-if="isEditing" type="button" class="btn btn-success me-2" @click="updateMember">
+                <button
+                  v-if="isEditing"
+                  type="button"
+                  class="btn btn-success me-2"
+                  @click="updateMember"
+                >
                   저장
                 </button>
-                <button type="button" class="btn btn-primary" @click="toggleEdit">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  @click="toggleEdit"
+                >
                   {{ isEditing ? "취소" : "수정" }}
                 </button>
               </div>
             </form>
 
             <!-- 회원 탈퇴 버튼 -->
-            <button type="button" class="btn btn-danger w-100 mt-4" @click="deleteMember">
+            <button
+              type="button"
+              class="btn btn-danger w-100 mt-4"
+              @click="deleteMember"
+            >
               회원 탈퇴
             </button>
           </div>

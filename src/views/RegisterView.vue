@@ -48,7 +48,15 @@ function setAddressData(data) {
 function regist() {
   if (validateFields()) {
     console.log("doRegist");
-    store.register(member);
+    store
+      .register(member)
+      .then(() => {
+        alert("회원가입에 성공했습니다.");
+        router.push({ name: "login" });
+      })
+      .catch(() => {
+        alert("회원가입에 실패했습니다.");
+      });
   }
 }
 </script>
@@ -208,10 +216,7 @@ function regist() {
                 </div>
 
                 <!-- 가입 버튼 -->
-                <button
-                  class="btn btn-primary w-100 py-2"
-                  type="submit"
-                >
+                <button class="btn btn-primary w-100 py-2" type="submit">
                   가입하기
                 </button>
 

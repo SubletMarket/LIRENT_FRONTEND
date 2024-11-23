@@ -9,20 +9,6 @@ const memberStore = useMemberStore();
 // 로그인 상태를 계산 속성으로 정의
 const isLoggedIn = computed(() => !!memberStore.accessToken);
 
-// 네비게이션 바 로드 시 사용자 데이터 가져오기
-onMounted(async () => {
-  if (memberStore.accessToken) {
-    // 토큰이 있을 때만 호출
-    try {
-      await memberStore.getUserData();
-      console.log("사용자 정보 로드 성공:", memberStore.member);
-    } catch (err) {
-      console.log("사용자 정보 로드 실패:", err);
-    }
-  } else {
-    console.log("토큰 없음: 사용자 정보 가져오기 건너뜀");
-  }
-});
 const handleLogout = () => {
   memberStore.logout(); // 상태 초기화만 수행
   console.log("로그아웃 완료");
@@ -108,6 +94,15 @@ const handleLogout = () => {
                 class="nav-link"
                 aria-current="page"
                 >마이페이지</RouterLink
+              >
+            </li>
+
+            <li class="nav-item">
+              <RouterLink
+                :to="{ name: 'deal' }"
+                class="nav-link"
+                aria-current="page"
+                >내 매물 관리</RouterLink
               >
             </li>
           </ul>

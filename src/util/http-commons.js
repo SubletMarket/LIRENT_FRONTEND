@@ -19,7 +19,7 @@ function createAxiosInstance(baseUrl, credentials) {
 
   // 요청 인터셉터 추가
   instance.interceptors.request.use((config) => {
-    const token = localStorage.getItem("accessToken"); // 저장된 토큰 가져오기
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`; // Authorization 헤더 추가
     }

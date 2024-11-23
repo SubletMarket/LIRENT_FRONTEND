@@ -39,13 +39,17 @@ const disabledDates = computed(() => {
   const dates = [];
   if (deals.value) {
     for (const deal of deals.value) {
-      const startDate = new Date(deal.startDate);
-      const endDate = new Date(deal.endDate);
+      console.log(deal);
 
-      while (startDate <= endDate) {
-        dates.push(new Date(startDate));
-        // 하루 증가
-        startDate.setDate(startDate.getDate() + 1);
+      if (deal.accepted) {
+        const startDate = new Date(deal.startDate);
+        const endDate = new Date(deal.endDate);
+
+        while (startDate <= endDate) {
+          dates.push(new Date(startDate));
+          // 하루 증가
+          startDate.setDate(startDate.getDate() + 1);
+        }
       }
     }
   }
