@@ -8,8 +8,10 @@ const props = defineProps({
 </script>
 
 <template>
-  <HomeDetailBoard :sublease="props.currentSublease" />
-  <!-- <HomeDetailChat :sublease="props.currentSublease" /> -->
+  <div>
+    <HomeDetailBoard :sublease="props.currentSublease" />
+    <HomeDetailChat :sublease="props.currentSublease" />
+  </div>
 </template>
 
 <style scoped></style>

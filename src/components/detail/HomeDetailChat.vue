@@ -1,16 +1,7 @@
 <script setup>
 import { useMemberStore } from "@/stores/member";
 import { chatsAxios } from "@/util/http-commons";
-import {
-  computed,
-  onBeforeUpdate,
-  onMounted,
-  onUpdated,
-  reactive,
-  ref,
-  watch,
-} from "vue";
-import { useRoute } from "vue-router";
+import { computed, onUpdated, ref, watch } from "vue";
 
 const chatsHttp = chatsAxios();
 const store = useMemberStore();
@@ -28,15 +19,18 @@ const currentMemberIsOwner = computed(() => {
   return props.sublease.memberId === store.member.id;
 });
 
-onUpdated(() => {
-  //TODO: 채팅 필요할때 풀기..
-  // clearInterval(chatPollInstance.value);
-  // chatPollInstance.value = setInterval(
-  //   getChats,
-  //   100,
-  //   props.sublease.subleaseId
-  // );
-});
+watch(
+  () => props.sublease,
+  (newVal, oldVal) => {
+    // clearInterval(chatPollInstance.value);
+    // chatPollInstance.value = setInterval(
+    //   getChats,
+    //   100,
+    //   props.sublease.subleaseId
+    // );
+  },
+  { immediate: true }
+);
 
 // 채팅 데이터 가져오기
 function getChats(subleaseId) {
@@ -46,8 +40,6 @@ function getChats(subleaseId) {
 }
 
 function sendMessage() {
-  console.log();
-
   chatsHttp.post("", {
     subleaseId: props.sublease.subleaseId,
     memberId: store.member.id,
