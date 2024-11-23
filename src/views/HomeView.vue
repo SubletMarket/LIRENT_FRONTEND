@@ -14,29 +14,49 @@ const router = useRouter();
 // 변수들
 const mapInstance = ref();
 
-// 매물 리스트
+// 매물 관련 변수
 const subleaseList = ref();
-subleaseHttp.get("").then(({ data }) => {
-  subleaseList.value = data;
-});
-
-// 현재 선택된 매물
 const currentSublease = ref();
 
+// 매물 관련 변수 초기화
+subleaseHttp.get("").then(({ data }) => {
+  subleaseList.value = data;
+
+  data.forEach((sublease) => {
+    if (sublease.subleaseId == route.params.subleaseId) {
+      currentSublease.value = sublease;
+    }
+  });
+});
+
 onMounted(async () => {
-  const coords = await getCurrentCoord();
   // 카카오 맵 생성
   mapInstance.value = new KakaoMap(
     document.getElementById("map"),
-    coords.latitude,
-    coords.longitude
+    "37.413294",
+    "127.269311"
   );
 
   // 카카오 맵 로드되기까지 대기
   await mapInstance.value.waitForMap();
 
-  // 카카오 맵이 로드된 후 CustomOverlay 표시
-  initMapAndData();
+  // 지도 위치 이동
+  if (currentSublease.value) {
+    mapInstance.value.setCenter({
+      latitude: currentSublease.value.latitude,
+      longitude: currentSublease.value.longitude,
+    });
+  } else {
+    getCurrentCoord().then((data) => {
+      mapInstance.value.setCenter({
+        latitude: data.latitude,
+        longitude: data.longitude,
+      });
+    });
+  }
+
+  // CustomOverlay 표시
+  initOverlay();
 });
 
 // 선택된 매물이 변경될 경우 현재 매물값 변경
@@ -49,7 +69,7 @@ onBeforeRouteUpdate((to, from) => {
 // 현재 매물이 변하면 지도 오버레이 컬러 변경
 watch(currentSublease, setOverlaiesColor);
 
-function initMapAndData() {
+function initOverlay() {
   for (const sublease of subleaseList.value) {
     // init Overlay
     const adjustedPrice = sublease.price / 10000;
@@ -70,15 +90,6 @@ function initMapAndData() {
 
     if (route.params.subleaseId == sublease.subleaseId) {
       content.className = "text-bg-info";
-
-      // init sublease Data
-      currentSublease.value = sublease;
-
-      // init center
-      mapInstance.value.setCenter({
-        latitude: sublease.latitude,
-        longitude: sublease.longitude,
-      });
     } else {
       content.className = "text-bg-light";
     }
@@ -130,7 +141,7 @@ function setOverlaiesColor() {
 
 <template>
   <div id="map">
-    <!-- <RouterView :current-sublease="currentSublease" /> -->
+    <RouterView v-if="currentSublease" :current-sublease="currentSublease" />
   </div>
 </template>
 
