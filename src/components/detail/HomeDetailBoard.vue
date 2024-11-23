@@ -3,7 +3,9 @@ import { computed, onBeforeMount, reactive, ref, watch } from "vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { subleaseDealAxios } from "@/util/http-commons";
+import { createRouterMatcher, useRouter } from "vue-router";
 
+const router = useRouter();
 const dealHttp = subleaseDealAxios();
 
 const props = defineProps({
@@ -12,9 +14,6 @@ const props = defineProps({
 
 // 현재 매물의 계약들 관련 데이터
 const deals = ref();
-// dealHttp.get(`/${props.sublease.subleaseId}`).then(({ data }) => {
-//   deals.value = data;
-// });
 
 // 선택된 계약 기간 변수
 const rentPeriod = ref();
@@ -22,8 +21,12 @@ const rentPeriod = ref();
 // 기간 계산용 computed
 const dayDifference = computed(() => {
   if (rentPeriod.value) {
-    const diffTime =
-      rentPeriod.value[1].getTime() - rentPeriod.value[0].getTime(); // 밀리초 단위 차이 계산
+    const startDate = rentPeriod.value[0];
+    const endDate = rentPeriod.value[1]
+      ? rentPeriod.value[1]
+      : rentPeriod.value[0];
+
+    const diffTime = endDate.getTime() - startDate.getTime(); // 밀리초 단위 차이 계산
     const diffDays = diffTime / (1000 * 60 * 60 * 24); // 일 단위로 변환
     return diffDays + 1;
   } else {
@@ -60,6 +63,24 @@ watch(
   },
   { immediate: true }
 );
+
+function offerDeal() {
+  dealHttp
+    .post("", {
+      subleaseId: props.sublease.subleaseId,
+      startDate: rentPeriod.value[0],
+      endDate: rentPeriod.value[1] ? rentPeriod.value[1] : rentPeriod.value[0],
+      deposit: props.sublease.deposit,
+      totalPrice: props.sublease.price * dayDifference.value,
+    })
+    .then(() => {
+      alert("예약 성공");
+      router.push({ name: "mypage" });
+    })
+    .catch(() => {
+      alert("로그인이 필요합니다.");
+    });
+}
 </script>
 
 <template>
@@ -140,7 +161,9 @@ watch(
         </p>
 
         <div class="d-grid gap-2 mb-3">
-          <button class="btn btn-primary" @click.prevent="">예약하기</button>
+          <button class="btn btn-primary" @click.prevent="offerDeal">
+            예약하기
+          </button>
         </div>
       </template>
     </div>
