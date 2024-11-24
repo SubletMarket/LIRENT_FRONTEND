@@ -37,7 +37,6 @@ const handleLogin = async () => {
     router.push("/"); // 로그인 후 홈으로 이동
   } catch (error) {
     console.error("로그인 오류:", error);
-
     if (error.response && error.response.status === 404) {
       alert("아이디 또는 비밀번호가 잘못되었습니다.");
     } else {
@@ -121,7 +120,6 @@ const navigateTo = (path) => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 body {
