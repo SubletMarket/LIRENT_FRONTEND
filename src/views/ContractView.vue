@@ -3,6 +3,8 @@ import { ref, computed } from "vue";
 import axios from "axios";
 import { useMemberStore } from "@/stores/member";
 
+const { VITE_CONTRACT_API_URL } = import.meta.env;
+
 // Member store instance to access token
 const memberStore = useMemberStore();
 const accessToken = computed(() => memberStore.accessToken);
@@ -96,7 +98,7 @@ const submitForm = async () => {
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/contract/generate",
+      `${VITE_CONTRACT_API_URL}/generate`,
       formData.value,
       {
         headers: {
@@ -122,18 +124,15 @@ const downloadFile = async () => {
   }
 
   try {
-    const response = await axios.get(
-      `http://localhost:8080/api/contract/download`,
-      {
-        params: {
-          filePath: generatedFilePath.value, // 파일 경로 전달
-        },
-        headers: {
-          Authorization: `Bearer ${accessToken.value}`, // JWT 인증 헤더 포함
-        },
-        responseType: "blob", // 바이너리 데이터로 응답받기
-      }
-    );
+    const response = await axios.get(`${VITE_CONTRACT_API_URL}/download`, {
+      params: {
+        filePath: generatedFilePath.value, // 파일 경로 전달
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`, // JWT 인증 헤더 포함
+      },
+      responseType: "blob", // 바이너리 데이터로 응답받기
+    });
 
     // 다운로드 처리
     const url = window.URL.createObjectURL(new Blob([response.data]));
