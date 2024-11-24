@@ -110,6 +110,15 @@ const handleLogout = () => {
                 >마이페이지</RouterLink
               >
             </li>
+
+            <li class="nav-item">
+              <RouterLink
+                :to="{ name: 'mybuket' }"
+                class="nav-link"
+                aria-current="page"
+                >즐겨찾기</RouterLink
+              >
+            </li>
           </ul>
         </template>
       </div>

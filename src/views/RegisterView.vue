@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from "vue";
+import { handleError, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useMemberStore } from "@/stores/member";
 import RegisterAddress from "@/components/RegisterAddress.vue";
@@ -44,12 +44,53 @@ function setAddressData(data) {
   member.latitude = data.latitude;
   member.longitude = data.longitude;
 }
-
-function regist() {
+async function regist() {
   if (validateFields()) {
-    console.log("doRegist");
-    store.register(member);
+    const emailExists = await store.checkEmailExists(member.email);
+    if (emailExists) {
+      return;
+    }
+    store
+      .register(member)
+      .then((res) => {
+        console.log("회원가입 성공 결과:", res);
+        alert("회원가입에 성공했습니다.");
+        router.push("/login");
+      })
+      .catch((error) => {
+        console.error("회원가입 중 오류:", error);
+        alert("아이디가 중복되어 회원가입에 실패했습니다.");
+        location.reload(); // 페이지 리로드
+      });
   }
+}
+// function regist() {
+//   if (validateFields()) {
+//     store
+//       .register(member)
+//       .then(() => {
+//         alert("회원가입에 성공했습니다.");
+//         router.push("login");
+//       })
+//       .catch((error) => {
+//         handleError(error);
+//       });
+//   }
+// }
+function validateEmail() {
+  if (!member.email) {
+    errors.email = true;
+    return false;
+  }
+
+  store
+    .checkEmailExists(member.email)
+    .then((exists) => {
+      errors.email = exists; // 중복 여부에 따라 에러 설정
+    })
+    .catch((err) => {
+      console.error("이메일 유효성 검사 중 오류:", err);
+    });
 }
 </script>
 
@@ -76,10 +117,11 @@ function regist() {
                         placeholder="이메일을 입력하세요"
                         v-model="member.email"
                         :class="{ 'is-invalid': errors.email }"
+                        @blur="validateEmail"
                         required
                       />
                       <div v-if="errors.email" class="invalid-feedback">
-                        이메일 주소를 입력하세요.
+                        사용 중인 이메일입니다.
                       </div>
                     </div>
                     <!-- 비밀번호 -->
@@ -208,10 +250,7 @@ function regist() {
                 </div>
 
                 <!-- 가입 버튼 -->
-                <button
-                  class="btn btn-primary w-100 py-2"
-                  type="submit"
-                >
+                <button class="btn btn-primary w-100 py-2" type="submit">
                   가입하기
                 </button>
 

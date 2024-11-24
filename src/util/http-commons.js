@@ -5,6 +5,7 @@ const {
   VITE_NOTICE_API_URL,
   VITE_SUBLEASE_API_URL,
   VITE_CHATS_API_URL,
+  VITE_BASKET_API_URL,
 } = import.meta.env;
 
 function createAxiosInstance(baseUrl, credentials) {
@@ -43,5 +44,7 @@ function noticeAxios() {
 function chatsAxios() {
   return createAxiosInstance(VITE_CHATS_API_URL, true);
 }
-
-export { memberAxios, noticeAxios, subleaseAxios, chatsAxios };
+function basketAxios() {
+  return createAxiosInstance(VITE_BASKET_API_URL);
+}
+export { memberAxios, noticeAxios, subleaseAxios, chatsAxios, basketAxios };

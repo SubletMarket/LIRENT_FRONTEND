@@ -8,6 +8,7 @@ import UpdateUserView from "@/views/UpdateUserView.vue";
 import ResetPasswordView from "@/views/ResetPasswordView.vue";
 import HomeDetailView from "@/views/HomeDetailView.vue";
 import ContractView from "@/views/ContractView.vue";
+import MyBuketView from "@/views/MyBuketView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,11 @@ const router = createRouter({
       path: "/mypage",
       name: "mypage",
       component: MyPageView,
+    },
+    {
+      path: "/mybuket",
+      name: "mybuket",
+      component: MyBuketView,
     },
     {
       path: "/updateUser",

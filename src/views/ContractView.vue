@@ -7,6 +7,9 @@ import { useMemberStore } from "@/stores/member";
 const memberStore = useMemberStore();
 const accessToken = computed(() => memberStore.accessToken);
 
+// 역할 관리
+const role = ref(""); // "전대인" 또는 "전차인" 저장
+
 const formData = ref({
   Address: "",
   subleaseDeposit: "",
@@ -28,9 +31,66 @@ const formData = ref({
   toName: "",
 });
 
+const formLabels = {
+  Address: "주소",
+  subleaseDeposit: "보증금",
+  subleaseCost: "월세",
+  contractYear: "계약 연도",
+  contractMonth: "계약 월",
+  contractDay: "계약 일",
+  startYear: "시작 연도",
+  startMonth: "시작 월",
+  startDay: "시작 일",
+  endYear: "종료 연도",
+  endMonth: "종료 월",
+  endDay: "종료 일",
+  fromNum: "임대인 번호",
+  fromPN: "임대인 연락처",
+  fromName: "임대인 이름",
+  toNum: "임차인 번호",
+  toPN: "임차인 연락처",
+  toName: "임차인 이름",
+};
+
 const generatedFilePath = ref("");
 const isLoading = ref(false);
 
+// 역할 선택 시 데이터 업데이트
+const onRoleChange = async () => {
+  try {
+    await memberStore.getUserData(); // 사용자 정보 가져오기
+    const user = memberStore.member;
+
+    if (role.value === "전대인") {
+      // 전대인 관련 필드 채우기
+      formData.value.Address = user.address || "";
+      formData.value.fromNum = user.id || "";
+      formData.value.fromPN = user.phone || "";
+      formData.value.fromName = user.nickname || "";
+
+      // 전차인 관련 필드 초기화
+      formData.value.toNum = "";
+      formData.value.toPN = "";
+      formData.value.toName = "";
+    } else if (role.value === "전차인") {
+      // 전차인 관련 필드 채우기
+      formData.value.toNum = user.id || "";
+      formData.value.toPN = user.phone || "";
+      formData.value.toName = user.nickname || "";
+
+      // 전대인 관련 필드 초기화
+      formData.value.Address = "";
+      formData.value.fromNum = "";
+      formData.value.fromPN = "";
+      formData.value.fromName = "";
+    }
+  } catch (error) {
+    console.error("역할 선택 시 데이터 로드 실패:", error);
+    alert("사용자 정보를 불러오는 데 실패했습니다.");
+  }
+};
+
+// 계약서 생성
 const submitForm = async () => {
   isLoading.value = true;
 
@@ -54,6 +114,7 @@ const submitForm = async () => {
   }
 };
 
+// 파일 다운로드
 const downloadFile = async () => {
   if (!generatedFilePath.value) {
     alert("다운로드할 파일이 없습니다. 계약서를 먼저 생성하세요.");
@@ -92,43 +153,130 @@ const downloadFile = async () => {
     alert("파일 다운로드 중 오류가 발생했습니다.");
   }
 };
-
 </script>
 
 <template>
-  <div class="container mt-4">
-    <h2 style="text-align: center;">계약서 생성기</h2>
-    <form @submit.prevent="submitForm" class="mt-4">
-      <div v-for="(value, key) in formData" :key="key" class="mb-3">
-        <label :for="key" class="form-label">{{ key }}</label>
-        <input
-          type="text"
-          :id="key"
-          class="form-control"
-          v-model="formData[key]"
-          :placeholder="`Enter ${key}`"
-          required
-        />
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-10 col-lg-8">
+        <div class="card shadow-lg border-0">
+          <div class="card-body">
+            <div class="container mt-4">
+              <h2 style="text-align: center">🖊️계약서 생성기</h2>
+
+              <!-- 역할 선택 -->
+              <div
+                class="d-flex justify-content-center align-items-center mb-4"
+              >
+                <label class="form-check-label me-3">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="전대인"
+                    v-model="role"
+                    @change="onRoleChange"
+                  />
+                  전대인
+                </label>
+                <label class="form-check-label">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="전차인"
+                    v-model="role"
+                    @change="onRoleChange"
+                  />
+                  전차인
+                </label>
+              </div>
+
+              <!-- 입력 폼 -->
+              <form @submit.prevent="submitForm" class="mt-4">
+                <div class="table-responsive">
+                  <table
+                    class="table table-bordered table-hover align-middle"
+                    style="border: 2px solid black"
+                  >
+                    <tbody>
+                      <tr v-for="(value, key) in formData" :key="key">
+                        <th
+                          style="
+                            width: 30%;
+                            border: 2px solid black;
+                            background-color: #f8f9fa;
+                          "
+                        >
+                          {{ formLabels[key] || key }}
+                        </th>
+                        <td style="border: 2px solid black">
+                          <input
+                            type="text"
+                            :id="key"
+                            class="form-control"
+                            v-model="formData[key]"
+                            :placeholder="`Enter ${key}`"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                  <button
+                    type="submit"
+                    class="btn btn-success px-4 py-2"
+                    :disabled="isLoading"
+                  >
+                    {{ isLoading ? "생성 중..." : "계약서 생성" }}
+                  </button>
+                </div>
+              </form>
+
+              <!-- 결과 -->
+              <div v-if="generatedFilePath" class="mt-4">
+                <h4>계약서 생성 결과</h4>
+                <p>{{ generatedFilePath }}</p>
+                <a
+                  v-if="generatedFilePath"
+                  @click.prevent="downloadFile"
+                  class="btn btn-success"
+                  target="_blank"
+                  >다운로드</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary" :disabled="isLoading">
-        {{ isLoading ? "생성 중..." : "계약서 생성" }}
-      </button>
-    </form>
-    <div v-if="generatedFilePath" class="mt-4">
-      <h4>계약서 생성 결과</h4>
-      <p>{{ generatedFilePath }}</p>
-      <a
-  v-if="generatedFilePath"
-  @click.prevent="downloadFile"
-  class="btn btn-success"
-  target="_blank"
->다운로드</a>
     </div>
   </div>
 </template>
 
 <style scoped>
-.container {
-  max-width: 800px;
+h2 {
+  text-align: center;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
 }
 </style>

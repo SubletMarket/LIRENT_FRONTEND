@@ -1,7 +1,6 @@
 import { reactive, ref } from "vue";
 import { defineStore } from "pinia";
 import { memberAxios } from "@/util/http-commons";
-
 export const useMemberStore = defineStore("member", () => {
   const memberHttp = memberAxios();
 
@@ -10,16 +9,24 @@ export const useMemberStore = defineStore("member", () => {
     id: "",
     nickname: "",
     email: "",
-
+    // 비밀번호는 상태에서 제거
+    phone: "",
+    address: "",
+    park: false,
+    buildingElevatorNum: 0,
+    floor: 0,
+    area: 0,
+    rooms: 0,
+    bathrooms: 0,
+    latitude: "",
+    longitude: "",
   });
 
   const accessToken = ref(localStorage.getItem("accessToken") || "");
 
   function login(email, password) {
     return memberHttp
-      .post("/token",
-        { email, password },
-        { withCredentials: true })
+      .post("/token", { email, password }, { withCredentials: true })
       .then((res) => {
         accessToken.value = res.data.accessToken; // 토큰 저장
         localStorage.setItem("accessToken", res.data.accessToken); // localStorage에 저장
@@ -77,6 +84,7 @@ export const useMemberStore = defineStore("member", () => {
         member.latitude = data.latitude;
         member.longitude = data.longitude;
 
+        // 비밀번호는 저장하지 않음
         // 로그용
         console.log("현재 사용자 상태:", member);
       })
@@ -100,7 +108,8 @@ export const useMemberStore = defineStore("member", () => {
     latitude,
     longitude,
   }) {
-    memberHttp
+    console.log("register 호출됨");
+    return memberHttp // Promise 반환
       .post("", {
         email,
         password,
@@ -118,43 +127,17 @@ export const useMemberStore = defineStore("member", () => {
       })
       .then((res) => {
         console.log("Register 성공함:", res);
+        return res; // 성공 결과 반환
       })
       .catch((err) => {
         console.error("회원가입 실패:", err);
+        throw err; // 에러를 상위로 전달
       });
   }
 
-  function updateUser({
-    email,
-    password,
-    nickname,
-    phone,
-    address,
-    park,
-    buildingElevatorNum,
-    floor,
-    area,
-    rooms,
-    bathrooms,
-    latitude,
-    longitude,
-  }) {
+  function updateUser(data) {
     return memberHttp
-      .put("", {
-        email,
-        password, // 기본적으로 store.member.password 전달
-        nickname,
-        phone,
-        address,
-        park,
-        buildingElevatorNum,
-        floor,
-        area,
-        rooms,
-        bathrooms,
-        latitude,
-        longitude,
-      })
+      .put("", data)
       .then((res) => {
         console.log("회원 정보 업데이트 성공:", res.data);
       })
@@ -163,13 +146,10 @@ export const useMemberStore = defineStore("member", () => {
         throw err;
       });
   }
-  
-  
-  
 
   function deleteUser() {
-    memberHttp
-      .delete("/api/member", {
+    return memberHttp
+      .delete("", {
         headers: {
           Authorization: `Bearer ${accessToken.value}`, // JWT 토큰 추가
         },
@@ -180,6 +160,19 @@ export const useMemberStore = defineStore("member", () => {
       .catch((err) => {
         console.error("회원 삭제 실패:", err.response || err);
         alert("회원 삭제에 실패했습니다.");
+      });
+  }
+
+  function checkEmailExists(email) {
+    return memberHttp
+      .get(`/exists/${email}`) // 인증 헤더 제거
+      .then((res) => {
+        console.log("이메일 중복 확인 성공:", res.data);
+        return res.data;
+      })
+      .catch((err) => {
+        console.error("이메일 중복 확인 실패:", err.response || err);
+        throw err;
       });
   }
 
@@ -209,5 +202,6 @@ export const useMemberStore = defineStore("member", () => {
     deleteUser,
     resetPassword,
     getUserData,
+    checkEmailExists,
   };
 });
