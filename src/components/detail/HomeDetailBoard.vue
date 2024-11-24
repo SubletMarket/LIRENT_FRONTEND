@@ -4,9 +4,12 @@ import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { subleaseDealAxios } from "@/util/http-commons";
 import { createRouterMatcher, useRouter } from "vue-router";
+import { useMemberStore } from "@/stores/member";
 
 const router = useRouter();
 const dealHttp = subleaseDealAxios();
+
+const store = useMemberStore();
 
 const props = defineProps({
   sublease: Object,
@@ -92,11 +95,17 @@ function offerDeal() {
   <div class="card fixed-card">
     <div class="custom-card-header">
       <h5 class="fw-bold">{{ props.sublease.address }}</h5>
+      <p
+        v-if="props.sublease.memberId == store.member.id"
+        class="text-danger fw-medium"
+      >
+        *내 매물
+      </p>
     </div>
     <div class="card-body overflow-auto">
       <!-- 상단 강조 정보 -->
       <div class="mb-4 text-center">
-        <h3 class="fw-bold text-primary mb-2">{{ props.sublease.area }}평</h3>
+        <h3 class="fw-bold text-primary mb-2">{{ props.sublease.area }}m²</h3>
       </div>
 
       <!-- 상세 정보 -->
