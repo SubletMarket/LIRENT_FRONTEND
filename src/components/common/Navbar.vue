@@ -99,10 +99,19 @@ const handleLogout = () => {
 
             <li class="nav-item">
               <RouterLink
-                :to="{ name: 'deal' }"
+                :to="{ name: 'mysublease' }"
                 class="nav-link"
                 aria-current="page"
                 >내 매물 관리</RouterLink
+              >
+            </li>
+
+            <li class="nav-item">
+              <RouterLink
+                :to="{ name: 'mydeal' }"
+                class="nav-link"
+                aria-current="page"
+                >내 예약 관리</RouterLink
               >
             </li>
           </ul>
