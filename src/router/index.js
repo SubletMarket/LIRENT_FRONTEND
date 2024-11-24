@@ -9,6 +9,8 @@ import ResetPasswordView from "@/views/ResetPasswordView.vue";
 import HomeDetailView from "@/views/HomeDetailView.vue";
 import ContractView from "@/views/ContractView.vue";
 import MyBuketView from "@/views/MyBuketView.vue";
+import MySubleaseView from "@/views/MySubleaseView.vue";
+import MyDealView from "@/views/MyDealView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -50,6 +52,16 @@ const router = createRouter({
       path: "/mybuket",
       name: "mybuket",
       component: MyBuketView,
+    },
+    {
+      path: "/mysublease",
+      name: "mysublease",
+      component: MySubleaseView,
+    },
+    {
+      path: "/mydeal",
+      name: "mydeal",
+      component: MyDealView,
     },
     {
       path: "/updateUser",

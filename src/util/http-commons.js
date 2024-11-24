@@ -4,6 +4,7 @@ const {
   VITE_MEMBER_API_URL,
   VITE_NOTICE_API_URL,
   VITE_SUBLEASE_API_URL,
+  VITE_SUBLEASE_DEAL_API_URL,
   VITE_CHATS_API_URL,
   VITE_BASKET_API_URL,
 } = import.meta.env;
@@ -19,7 +20,7 @@ function createAxiosInstance(baseUrl, credentials) {
 
   // 요청 인터셉터 추가
   instance.interceptors.request.use((config) => {
-    const token = localStorage.getItem("accessToken"); // 저장된 토큰 가져오기
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`; // Authorization 헤더 추가
     }
@@ -33,6 +34,10 @@ function subleaseAxios() {
   return createAxiosInstance(VITE_SUBLEASE_API_URL, true);
 }
 
+function subleaseDealAxios() {
+  return createAxiosInstance(VITE_SUBLEASE_DEAL_API_URL, true);
+}
+
 function memberAxios() {
   return createAxiosInstance(VITE_MEMBER_API_URL, true);
 }
@@ -44,7 +49,15 @@ function noticeAxios() {
 function chatsAxios() {
   return createAxiosInstance(VITE_CHATS_API_URL, true);
 }
+
 function basketAxios() {
   return createAxiosInstance(VITE_BASKET_API_URL);
 }
-export { memberAxios, noticeAxios, subleaseAxios, chatsAxios, basketAxios };
+export {
+  memberAxios,
+  noticeAxios,
+  subleaseAxios,
+  chatsAxios,
+  basketAxios,
+  subleaseDealAxios,
+};

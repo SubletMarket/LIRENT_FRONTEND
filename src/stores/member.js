@@ -1,6 +1,7 @@
 import { reactive, ref } from "vue";
 import { defineStore } from "pinia";
 import { memberAxios } from "@/util/http-commons";
+
 export const useMemberStore = defineStore("member", () => {
   const memberHttp = memberAxios();
 
@@ -22,14 +23,12 @@ export const useMemberStore = defineStore("member", () => {
     longitude: "",
   });
 
-  const accessToken = ref(localStorage.getItem("accessToken") || "");
-
   function login(email, password) {
     return memberHttp
       .post("/token", { email, password }, { withCredentials: true })
       .then((res) => {
         accessToken.value = res.data.accessToken; // 토큰 저장
-        localStorage.setItem("accessToken", res.data.accessToken); // localStorage에 저장
+        getUserData(); // 유저 정보 가져오기
         return accessToken.value; // 토큰 반환
       })
       .catch((err) => {
@@ -38,26 +37,10 @@ export const useMemberStore = defineStore("member", () => {
       });
   }
   function logout() {
-    accessToken.value = ""; // 토큰 삭제
-    localStorage.removeItem("accessToken"); // 저장된 토큰 삭제
-
-    // Member 객체 초기화
-    member.id = "";
-    member.email = "";
-    member.nickname = "";
-    member.phone = "";
-    member.address = "";
-    member.park = false;
-    member.buildingElevatorNum = 0;
-    member.floor = 0;
-    member.area = 0;
-    member.rooms = 0;
-    member.bathrooms = 0;
-    member.latitude = "";
-    member.longitude = "";
-
-    console.log("로그아웃 완료. 상태 초기화:", member);
+    accessToken.value = null; // 토큰 삭제
+    member.value = null;
   }
+
   function getUserData() {
     return memberHttp
       .get("/userinfo", {
@@ -83,9 +66,6 @@ export const useMemberStore = defineStore("member", () => {
         member.bathrooms = data.bathrooms;
         member.latitude = data.latitude;
         member.longitude = data.longitude;
-
-        // 비밀번호는 저장하지 않음
-        // 로그용
         console.log("현재 사용자 상태:", member);
       })
       .catch((err) => {
@@ -108,8 +88,7 @@ export const useMemberStore = defineStore("member", () => {
     latitude,
     longitude,
   }) {
-    console.log("register 호출됨");
-    return memberHttp // Promise 반환
+    return memberHttp
       .post("", {
         email,
         password,
@@ -204,4 +183,7 @@ export const useMemberStore = defineStore("member", () => {
     getUserData,
     checkEmailExists,
   };
+  {
+    persist: true;
+  }
 });

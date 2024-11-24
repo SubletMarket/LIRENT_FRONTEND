@@ -3,13 +3,15 @@ import HomeDetailBoard from "@/components/detail/HomeDetailBoard.vue";
 import HomeDetailChat from "@/components/detail/HomeDetailChat.vue";
 
 const props = defineProps({
-  sublease: Object,
+  currentSublease: Object,
 });
 </script>
 
 <template>
-  <HomeDetailBoard :sublease="props.sublease" />
-  <HomeDetailChat :sublease="props.sublease" />
+  <div>
+    <HomeDetailBoard :sublease="props.currentSublease" />
+    <HomeDetailChat :sublease="props.currentSublease" />
+  </div>
 </template>
 
 <style scoped></style>
