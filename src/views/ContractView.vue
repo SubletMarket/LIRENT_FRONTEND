@@ -10,6 +10,13 @@ const memberStore = useMemberStore();
 const accessToken = computed(() => memberStore.accessToken);
 const today = new Date();
 
+// 계약 데이터로 넘어온 값
+const props = defineProps({
+  info: String,
+});
+
+console.log(props.info);
+
 // 역할 관리
 const role = ref(""); // "전대인" 또는 "전차인" 저장
 
@@ -33,6 +40,27 @@ const formData = ref({
   toPN: "",
   toName: "",
 });
+
+if (props.info) {
+  formData.value.Address = props.info.address;
+  formData.value.subleaseDeposit = props.info.deposit;
+
+  const splitedStartDate = props.info.startDate.split("-");
+  formData.value.startYear = splitedStartDate[0];
+  formData.value.startMonth = splitedStartDate[1];
+  formData.value.startDay = splitedStartDate[2];
+
+  const splitedEndDate = props.info.endDate.split("-");
+  formData.value.endYear = splitedEndDate[0];
+  formData.value.endMonth = splitedEndDate[1];
+  formData.value.endDay = splitedEndDate[2];
+
+  formData.value.fromPN = props.info.sublessor.phone;
+  formData.value.fromName = props.info.sublessor.name;
+
+  formData.value.toPN = props.info.subleasee.phone;
+  formData.value.toName = props.info.subleasee.name;
+}
 
 const formLabels = {
   Address: "주소",
