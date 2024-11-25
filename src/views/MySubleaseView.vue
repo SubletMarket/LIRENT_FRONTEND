@@ -202,7 +202,7 @@ function handleSubmit() {
                   <div class="col-6">
                     <ul class="list-group list-group-flush text-center">
                       <li class="list-group-item">
-                        <strong>주소:</strong> 대전 유성구 덕명서로2번길 29-3
+                        <strong>주소:</strong> {{ store.member.address }}
                       </li>
                       <li class="list-group-item">
                         <strong>주차 가능 여부:</strong>

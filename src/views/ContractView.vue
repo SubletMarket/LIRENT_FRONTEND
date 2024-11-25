@@ -8,6 +8,7 @@ const { VITE_CONTRACT_API_URL } = import.meta.env;
 // Member store instance to access token
 const memberStore = useMemberStore();
 const accessToken = computed(() => memberStore.accessToken);
+const today = new Date();
 
 // 계약 데이터로 넘어온 값
 const props = defineProps({
@@ -23,9 +24,9 @@ const formData = ref({
   Address: "",
   subleaseDeposit: "",
   subleaseCost: "",
-  contractYear: "",
-  contractMonth: "",
-  contractDay: "",
+  contractYear: today.getFullYear().toString(),
+  contractMonth: (today.getMonth() + 1).toString(),
+  contractDay: today.getDate().toString(),
   startYear: "",
   startMonth: "",
   startDay: "",
