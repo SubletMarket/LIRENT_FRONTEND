@@ -32,11 +32,10 @@ function loadAddressAPI() {
 onMounted(async () => {
   // DAUM 주소 API 불러오기
   await loadAddressAPI();
+  loadAddressSearchBox();
 });
 
-function showAddressSearchBox() {
-  isOpen.value = !isOpen.value;
-
+function loadAddressSearchBox() {
   const searchBoxElement = document.getElementById("daum-address");
   new daum.Postcode({
     width: "100%",
@@ -48,6 +47,9 @@ function showAddressSearchBox() {
 function afterAddressSelected(data) {
   // 검색창 닫기
   isOpen.value = false;
+
+  // 새 검색창 로드
+  loadAddressSearchBox();
 
   // 데이터 처리
   addressInfo.address = `${data.address} ${data.buildingName}`;
@@ -102,7 +104,7 @@ function getCoord(address) {
     </p>
     <button
       class="btn btn-outline-secondary w-100"
-      @click.prevent="showAddressSearchBox"
+      @click.prevent="isOpen = !isOpen"
     >
       주소 찾기
     </button>
