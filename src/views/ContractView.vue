@@ -8,6 +8,7 @@ const { VITE_CONTRACT_API_URL } = import.meta.env;
 // Member store instance to access token
 const memberStore = useMemberStore();
 const accessToken = computed(() => memberStore.accessToken);
+const today = new Date();
 
 // 역할 관리
 const role = ref(""); // "전대인" 또는 "전차인" 저장
@@ -16,9 +17,9 @@ const formData = ref({
   Address: "",
   subleaseDeposit: "",
   subleaseCost: "",
-  contractYear: "",
-  contractMonth: "",
-  contractDay: "",
+  contractYear: today.getFullYear().toString(),
+  contractMonth: (today.getMonth() + 1).toString(),
+  contractDay: today.getDate().toString(),
   startYear: "",
   startMonth: "",
   startDay: "",
