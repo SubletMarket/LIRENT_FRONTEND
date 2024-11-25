@@ -46,14 +46,6 @@ const handleLogout = () => {
               >게시판</RouterLink
             >
           </li>
-          <li class="nav-item">
-            <RouterLink
-              :to="{ name: 'contract' }"
-              class="nav-link"
-              aria-current="page"
-              >계약서 작성</RouterLink
-            >
-          </li>
         </ul>
         <!-- 로그인 전 -->
         <template v-if="!isLoggedIn">
