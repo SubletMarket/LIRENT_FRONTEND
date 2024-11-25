@@ -1,7 +1,11 @@
 <script setup>
 import { useMemberStore } from "@/stores/member";
 import { chatsAxios } from "@/util/http-commons";
-import { computed, onUpdated, ref, watch } from "vue";
+import { computed, onMounted, onUpdated, ref, watch } from "vue";
+import { Client } from "@stomp/stompjs";
+import { onBeforeRouteUpdate } from "vue-router";
+
+const { VITE_WS_CHAT_URL } = import.meta.env;
 
 const chatsHttp = chatsAxios();
 const store = useMemberStore();
@@ -11,23 +15,61 @@ const props = defineProps({
   ownerId: Number,
 });
 
+// 웹소켓 클라이언트
+const stompClient = ref();
+
 // 채팅 데이터
 const chats = ref([]);
-const chatPollInstance = ref();
 
 const myMessage = ref();
 const currentMemberIsOwner = computed(() => {
   return props.ownerId === store.member.id;
 });
 
-watch(
-  () => props.sublease,
-  (newVal, oldVal) => {
-    // clearInterval(chatPollInstance.value);
-    // chatPollInstance.value = setInterval(getChats, 100, props.subleaseId);
-  },
-  { immediate: true }
-);
+onMounted(() => {
+  console.log("최초 마운트 " + props.subleaseId);
+
+  getChats(props.subleaseId);
+  connectWebSocket();
+});
+
+onBeforeRouteUpdate((to, from) => {
+  console.log("라우팅 업데이트 " + to.params.subleaseId);
+  stompClient.value.deactivate().then(() => {
+    console.log("웹소켓 연결 종료");
+  });
+  chats.value = null;
+  getChats(to.params.subleaseId);
+  connectWebSocket();
+});
+
+function connectWebSocket() {
+  // WebSocket 클라이언트 초기화
+  stompClient.value = new Client({
+    brokerURL: `${VITE_WS_CHAT_URL}`,
+    onConnect: () => {
+      console.log("채팅 웹소켓 연결 완료.");
+
+      // 특정 채팅방 구독
+      stompClient.value.subscribe(
+        `/topic/chatroom/${props.subleaseId}`,
+        (message) => {
+          console.log("채팅 메세지 수신");
+
+          const chat = JSON.parse(message.body);
+          chats.value.push(chat);
+        }
+      );
+    },
+    onStompError: (frame) => {
+      console.error("Broker reported error: " + frame.headers["message"]);
+      console.error("Additional details: " + frame.body);
+    },
+  });
+
+  // WebSocket 연결 활성화
+  stompClient.value.activate();
+}
 
 // 채팅 데이터 가져오기
 function getChats(subleaseId) {
@@ -37,12 +79,19 @@ function getChats(subleaseId) {
 }
 
 function sendMessage() {
-  chatsHttp.post("", {
-    subleaseId: props.subleaseId,
-    memberId: store.member.id,
-    message: myMessage.value,
-    owner: currentMemberIsOwner.value,
-  });
+  if (myMessage.value && store.member.id) {
+    const dto = {
+      subleaseId: props.subleaseId,
+      memberId: store.member.id,
+      message: myMessage.value,
+      owner: currentMemberIsOwner.value,
+    };
+
+    stompClient.value.publish({
+      destination: `/app/sendMessage/${props.subleaseId}`,
+      body: JSON.stringify(dto),
+    });
+  }
   myMessage.value = undefined;
 }
 </script>
@@ -81,6 +130,7 @@ function sendMessage() {
         class="form-control"
         placeholder="메시지 입력..."
         v-model="myMessage"
+        :readonly="!store.member.id"
       />
       <button class="btn btn-primary" @click.prevent="sendMessage">
         보내기

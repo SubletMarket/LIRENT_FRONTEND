@@ -10,20 +10,20 @@ export const useMemberStore = defineStore(
 
     // 상태 관리 객체
     const member = reactive({
-      id: "",
-      nickname: "",
-      email: "",
+      id: null,
+      nickname: null,
+      email: null,
       // 비밀번호는 상태에서 제거
-      phone: "",
-      address: "",
+      phone: null,
+      address: null,
       park: false,
       buildingElevatorNum: 0,
       floor: 0,
       area: 0,
       rooms: 0,
       bathrooms: 0,
-      latitude: "",
-      longitude: "",
+      latitude: null,
+      longitude: null,
     });
 
     function login(email, password) {
