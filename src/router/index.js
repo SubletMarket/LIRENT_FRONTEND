@@ -82,6 +82,17 @@ const router = createRouter({
       path: "/contract",
       name: "contract",
       component: ContractView,
+      props: (route) => {
+        let info = null;
+        if (route.query.info) {
+          try {
+            info = JSON.parse(decodeURIComponent(route.query.info));
+          } catch (error) {
+            console.log("JSON 파싱 오류");
+          }
+        }
+        return { info: info };
+      },
     },
   ],
 });
