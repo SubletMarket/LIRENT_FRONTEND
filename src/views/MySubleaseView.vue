@@ -109,10 +109,37 @@ function handleSubmit() {
                         <td class="text-end">
                           {{ deal.totalPrice / 10000 }}만원
                         </td>
-                        <td v-if="deal.accepted" class="text-center">수락됨</td>
+                        <td v-if="deal.accepted" class="text-center">
+                          <RouterLink
+                            class="btn btn-sm btn-secondary"
+                            :to="{
+                              name: 'contract',
+                              query: {
+                                info: encodeURIComponent(
+                                  JSON.stringify({
+                                    address: sublease.address,
+                                    deposit: deal.deposit,
+                                    totalPrice: deal.totalPrice,
+                                    startDate: deal.startDate,
+                                    endDate: deal.endDate,
+                                    subleasee: {
+                                      phone: deal.contractorPhone,
+                                      name: deal.contractorName,
+                                    },
+                                    sublessor: {
+                                      phone: store.member.phone,
+                                      name: store.member.nickname,
+                                    },
+                                  })
+                                ),
+                              },
+                            }"
+                            >계약서 생성</RouterLink
+                          >
+                        </td>
                         <td v-else class="text-center">
                           <button
-                            class="btn btn-primary"
+                            class="btn btn-primary btn-sm"
                             @click.prevent="handleAccept(deal)"
                           >
                             수락하기
