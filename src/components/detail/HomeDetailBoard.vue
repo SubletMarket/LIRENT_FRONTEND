@@ -99,7 +99,7 @@ function offerDeal() {
     })
     .then(() => {
       alert("예약 성공");
-      router.push({ name: "mypage" });
+      router.push({ name: "mydeal" });
     })
     .catch(() => {
       alert("로그인이 필요합니다.");
