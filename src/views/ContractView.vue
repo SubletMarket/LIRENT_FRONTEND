@@ -44,6 +44,7 @@ const formData = ref({
 if (props.info) {
   formData.value.Address = props.info.address;
   formData.value.subleaseDeposit = props.info.deposit;
+  formData.value.subleaseCost = props.info.totalPrice;
 
   const splitedStartDate = props.info.startDate.split("-");
   formData.value.startYear = splitedStartDate[0];
@@ -85,41 +86,6 @@ const formLabels = {
 
 const generatedFilePath = ref("");
 const isLoading = ref(false);
-
-// 역할 선택 시 데이터 업데이트
-const onRoleChange = async () => {
-  try {
-    await memberStore.getUserData(); // 사용자 정보 가져오기
-    const user = memberStore.member;
-
-    if (role.value === "전대인") {
-      // 전대인 관련 필드 채우기
-      formData.value.Address = user.address || "";
-      formData.value.fromNum = user.id || "";
-      formData.value.fromPN = user.phone || "";
-      formData.value.fromName = user.nickname || "";
-
-      // 전차인 관련 필드 초기화
-      formData.value.toNum = "";
-      formData.value.toPN = "";
-      formData.value.toName = "";
-    } else if (role.value === "전차인") {
-      // 전차인 관련 필드 채우기
-      formData.value.toNum = user.id || "";
-      formData.value.toPN = user.phone || "";
-      formData.value.toName = user.nickname || "";
-
-      // 전대인 관련 필드 초기화
-      formData.value.Address = "";
-      formData.value.fromNum = "";
-      formData.value.fromPN = "";
-      formData.value.fromName = "";
-    }
-  } catch (error) {
-    console.error("역할 선택 시 데이터 로드 실패:", error);
-    alert("사용자 정보를 불러오는 데 실패했습니다.");
-  }
-};
 
 // 계약서 생성
 const submitForm = async () => {
@@ -191,32 +157,6 @@ const downloadFile = async () => {
           <div class="card-body">
             <div class="container mt-4">
               <h2 style="text-align: center">🖊️계약서 생성기</h2>
-
-              <!-- 역할 선택 -->
-              <div
-                class="d-flex justify-content-center align-items-center mb-4"
-              >
-                <label class="form-check-label me-3">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="전대인"
-                    v-model="role"
-                    @change="onRoleChange"
-                  />
-                  전대인
-                </label>
-                <label class="form-check-label">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="전차인"
-                    v-model="role"
-                    @change="onRoleChange"
-                  />
-                  전차인
-                </label>
-              </div>
 
               <!-- 입력 폼 -->
               <form @submit.prevent="submitForm" class="mt-4">
