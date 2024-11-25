@@ -162,19 +162,19 @@ export const useMemberStore = defineStore(
         });
     }
 
-    function resetPassword(nickname, email, userId, password) {
-      memberHttp
-        .put("/passwordReset", {
-          nickname,
+    function resetPassword(name, email) {
+      return memberHttp
+        .post("/reset-password", {
+          name,
           email,
-          userId,
-          password,
         })
         .then((res) => {
           console.log("비밀번호 초기화 성공");
+          return res;
         })
         .catch((err) => {
           console.error("비밀번호 초기화 실패:", err);
+          throw err; // 에러를 상위로 전달
         });
     }
 

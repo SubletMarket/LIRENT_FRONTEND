@@ -138,4 +138,14 @@ const handleLogout = () => {
   background-color: transparent !important;
   box-shadow: none !important; /* 그림자도 제거하고 싶을 경우 */
 }
+
+.navbar .nav-link {
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.7em;
+}
 </style>
