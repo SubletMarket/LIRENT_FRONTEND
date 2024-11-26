@@ -3,12 +3,13 @@ import { useMemberStore } from "@/stores/member";
 import { chatsAxios } from "@/util/http-commons";
 import { computed, onMounted, onUpdated, ref, watch } from "vue";
 import { Client } from "@stomp/stompjs";
-import { onBeforeRouteUpdate } from "vue-router";
+import { onBeforeRouteUpdate, useRoute } from "vue-router";
 
 const { VITE_WS_CHAT_URL } = import.meta.env;
 
 const chatsHttp = chatsAxios();
 const store = useMemberStore();
+const route = useRoute();
 
 const props = defineProps({
   subleaseId: Number,
@@ -102,25 +103,47 @@ function sendMessage() {
       <h5 class="mb-0">채팅</h5>
     </div>
     <div class="card-body" style="max-height: 300px; overflow-y: auto">
+      <!-- 매물페이지에서 화면 -->
       <!-- 받은 메시지 -->
       <template v-for="chat in chats">
-        <template v-if="chat.owner">
-          <div class="d-flex flex-column align-items-start mb-3">
-            <div class="fw-bold">전차인</div>
-            <div class="p-2 rounded text-bg-light border">
-              {{ chat.message }}
+        <template v-if="route.params.subleaseId">
+          <template v-if="chat.owner">
+            <div class="d-flex flex-column align-items-start mb-3">
+              <div class="fw-bold">전차인</div>
+              <div class="p-2 rounded text-bg-light border">
+                {{ chat.message }}
+              </div>
             </div>
-          </div>
-        </template>
+          </template>
 
-        <!-- 보낸 메시지 -->
-        <template v-else>
-          <div class="d-flex flex-column align-items-end mb-3">
-            <div class="fw-bold">사용자</div>
-            <div class="p-2 rounded text-bg-primary text-white">
-              {{ chat.message }}
+          <!-- 보낸 메시지 -->
+          <template v-else>
+            <div class="d-flex flex-column align-items-end mb-3">
+              <div class="fw-bold">사용자</div>
+              <div class="p-2 rounded text-bg-primary text-white">
+                {{ chat.message }}
+              </div>
             </div>
-          </div>
+          </template>
+        </template>
+        <template v-else>
+          <!-- 보낸 메시지 -->
+          <template v-if="chat.owner">
+            <div class="d-flex flex-column align-items-end mb-3">
+              <div class="fw-bold">전차인</div>
+              <div class="p-2 rounded text-bg-primary text-white">
+                {{ chat.message }}
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <div class="d-flex flex-column align-items-start mb-3">
+              <div class="fw-bold">사용자</div>
+              <div class="p-2 rounded text-bg-light border">
+                {{ chat.message }}
+              </div>
+            </div>
+          </template>
         </template>
       </template>
     </div>
